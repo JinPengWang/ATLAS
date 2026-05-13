@@ -157,8 +157,11 @@ class ExperimentSaver:
         Returns:
             Path to the saved PNG file.
         """
+        import matplotlib.pyplot as plt
+
         path = self.figures_dir / f"{name}.png"
         fig.savefig(path, dpi=dpi, bbox_inches="tight")
+        plt.close(fig)  # Release memory
         return path
 
     def save_json(self, data: Any, name: str) -> Path:

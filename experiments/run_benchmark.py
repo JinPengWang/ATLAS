@@ -171,8 +171,8 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Plot types to generate",
     )
     parser.add_argument(
-        "--save_results", action="store_true", default=True,
-        help="Save results to disk (default: True)",
+        "--no_save_results", action="store_true", default=False,
+        help="Disable saving results to disk",
     )
     parser.add_argument("--verbose", action="store_true", help="Print per-iteration info")
     parser.add_argument("--base_dir", type=str, default="results", help="Output directory")
@@ -196,7 +196,7 @@ def main() -> None:
         seed=args.seed,
         pop_size=args.pop_size,
         plots=args.plots,
-        save_results=args.save_results,
+        save_results=not args.no_save_results,
         verbose=args.verbose,
         base_dir=args.base_dir,
         stopping_criterion=args.stopping_criterion,

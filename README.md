@@ -8,7 +8,7 @@
 ## 1. Introduction
 
 ATLAS is a research-oriented framework designed for students, researchers, and
-practitioners who work with metaheuristic optimisation algorithms.  It provides:
+practitioners who work with metaheuristic optimisation algorithms. It provides:
 
 - **12 built-in algorithms** – 6 iteration-based + 6 NFE-based variants (PSO, GA, DE, SA, WOA, ACO).
 - **155 benchmark functions** – 11 classic functions + 144 CEC competition benchmarks (CEC 2005–2022).
@@ -21,14 +21,14 @@ practitioners who work with metaheuristic optimisation algorithms.  It provides:
 
 ### Key Design Principles
 
-| Principle | How ATLAS achieves it |
-|---|---|
-| Extensibility | Decorator-based auto-registration (`@register_algorithm`, `@register_problem`) |
-| Dual stopping criteria | Iteration-based (`iteration/`) and NFE-based (`nfe/`) algorithm variants |
-| CEC benchmarks | Full CEC 2005–2022 suite via `opfunu` with suite-level grouping |
-| Ease of use | Single `Experiment` class orchestrates everything; `run_benchmark.py` provides a CLI |
-| Reproducibility | Per-run seeds, config logging, deterministic NumPy RNG |
-| Comparison | Multi-algorithm × multi-problem experiments with automatic heatmap generation |
+| Principle              | How ATLAS achieves it                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| Extensibility          | Decorator-based auto-registration (`@register_algorithm`, `@register_problem`)       |
+| Dual stopping criteria | Iteration-based (`iteration/`) and NFE-based (`nfe/`) algorithm variants             |
+| CEC benchmarks         | Full CEC 2005–2022 suite via `opfunu` with suite-level grouping                      |
+| Ease of use            | Single `Experiment` class orchestrates everything; `run_benchmark.py` provides a CLI |
+| Reproducibility        | Per-run seeds, config logging, deterministic NumPy RNG                               |
+| Comparison             | Multi-algorithm × multi-problem experiments with automatic heatmap generation        |
 
 ---
 
@@ -38,11 +38,11 @@ practitioners who work with metaheuristic optimisation algorithms.  It provides:
 
 ```bash
 # Clone or download the project
-cd E:\A_Works\workspace\ATLAS
+cd ATLAS
 
 # Create a virtual environment (recommended)
-python -m venv venv
-venv\Scripts\activate          # Windows
+conda create -n atlas python=3.8
+conda activate atlas          # Windows
 # source venv/bin/activate    # Linux/macOS
 
 # Install dependencies (includes opfunu for CEC benchmarks)
@@ -127,15 +127,15 @@ python experiments/run_benchmark.py --algorithms de_nfe --problems cec2022 --dim
 
 Available suite names and supported dimensions:
 
-| Suite | Functions | Default Dim | Supported Dims |
-|---|---|---|---|
-| `cec2005` | F1–F25 (25) | 30 | 10, 30, 50 |
-| `cec2013` | F1–F28 (28) | 30 | 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 |
-| `cec2014` | F1–F30 (30) | 30 | 10, 20, 30, 50, 100 |
-| `cec2017` | F1–F29 (29) | 30 | 2, 10, 20, 30, 50, 100 |
-| `cec2019` | F1–F10 (10) | varies | F1=9, F2=16, F3=18, F4-F10=10 (fixed) |
-| `cec2020` | F1–F10 (10) | 30 | 2, 5, 10, 15, 20, 30, 50, 100 |
-| `cec2022` | F1–F12 (12) | 10 | 2, 10, 20 |
+| Suite     | Functions   | Default Dim | Supported Dims                                |
+| --------- | ----------- | ----------- | --------------------------------------------- |
+| `cec2005` | F1–F25 (25) | 30          | 10, 30, 50                                    |
+| `cec2013` | F1–F28 (28) | 30          | 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 |
+| `cec2014` | F1–F30 (30) | 30          | 10, 20, 30, 50, 100                           |
+| `cec2017` | F1–F29 (29) | 30          | 2, 10, 20, 30, 50, 100                        |
+| `cec2019` | F1–F10 (10) | varies      | F1=9, F2=16, F3=18, F4-F10=10 (fixed)         |
+| `cec2020` | F1–F10 (10) | 30          | 2, 5, 10, 15, 20, 30, 50, 100                 |
+| `cec2022` | F1–F12 (12) | 10          | 2, 10, 20                                     |
 
 ### 2.5 Run from Jupyter
 
@@ -253,27 +253,27 @@ ATLAS/
 
 ### Iteration-Based Algorithms
 
-| # | Name | Abbrev. | Key Parameters | Reference |
-|---|---|---|---|---|
-| 1 | Particle Swarm Optimisation | `pso` | `w=0.7, c1=1.5, c2=1.5` | Kennedy & Eberhart (1995) |
-| 2 | Genetic Algorithm (real-coded) | `ga` | `crossover_prob=0.8, mutation_prob=0.01` | Holland (1992) |
-| 3 | Differential Evolution | `de` | `F=0.8, CR=0.9, strategy='rand/1/bin'` | Storn & Price (1997) |
-| 4 | Simulated Annealing | `sa` | `T_init=1000, T_min=1e-3, alpha=0.95` | Kirkpatrick et al. (1983) |
-| 5 | Whale Optimisation Algorithm | `woa` | `b=1.0` | Mirjalili & Lewis (2016) |
-| 6 | Ant Colony (continuous) | `aco` | `n_ants=20, q=0.1, xi=0.85` | Socha & Dorigo (2008) |
+| #   | Name                           | Abbrev. | Key Parameters                           | Reference                 |
+| --- | ------------------------------ | ------- | ---------------------------------------- | ------------------------- |
+| 1   | Particle Swarm Optimisation    | `pso`   | `w=0.7, c1=1.5, c2=1.5`                  | Kennedy & Eberhart (1995) |
+| 2   | Genetic Algorithm (real-coded) | `ga`    | `crossover_prob=0.8, mutation_prob=0.01` | Holland (1992)            |
+| 3   | Differential Evolution         | `de`    | `F=0.8, CR=0.9, strategy='rand/1/bin'`   | Storn & Price (1997)      |
+| 4   | Simulated Annealing            | `sa`    | `T_init=1000, T_min=1e-3, alpha=0.95`    | Kirkpatrick et al. (1983) |
+| 5   | Whale Optimisation Algorithm   | `woa`   | `b=1.0`                                  | Mirjalili & Lewis (2016)  |
+| 6   | Ant Colony (continuous)        | `aco`   | `n_ants=20, q=0.1, xi=0.85`              | Socha & Dorigo (2008)     |
 
 ### NFE-Based Algorithms
 
 These variants stop after a fixed number of function evaluations (NFE) instead of iterations, enabling fair comparison across algorithms with different population sizes.
 
-| # | Name | Abbrev. | Key Parameters | Reference |
-|---|---|---|---|---|
-| 1 | PSO (NFE-based) | `pso_nfe` | Same as PSO | Kennedy & Eberhart (1995) |
-| 2 | GA (NFE-based) | `ga_nfe` | Same as GA | Holland (1992) |
-| 3 | DE (NFE-based) | `de_nfe` | Same as DE | Storn & Price (1997) |
-| 4 | SA (NFE-based) | `sa_nfe` | Same as SA | Kirkpatrick et al. (1983) |
-| 5 | WOA (NFE-based) | `woa_nfe` | Same as WOA | Mirjalili & Lewis (2016) |
-| 6 | ACO (NFE-based) | `aco_nfe` | Same as ACO | Socha & Dorigo (2008) |
+| #   | Name            | Abbrev.   | Key Parameters | Reference                 |
+| --- | --------------- | --------- | -------------- | ------------------------- |
+| 1   | PSO (NFE-based) | `pso_nfe` | Same as PSO    | Kennedy & Eberhart (1995) |
+| 2   | GA (NFE-based)  | `ga_nfe`  | Same as GA     | Holland (1992)            |
+| 3   | DE (NFE-based)  | `de_nfe`  | Same as DE     | Storn & Price (1997)      |
+| 4   | SA (NFE-based)  | `sa_nfe`  | Same as SA     | Kirkpatrick et al. (1983) |
+| 5   | WOA (NFE-based) | `woa_nfe` | Same as WOA    | Mirjalili & Lewis (2016)  |
+| 6   | ACO (NFE-based) | `aco_nfe` | Same as ACO    | Socha & Dorigo (2008)     |
 
 All parameters can be overridden via `algo_params` in the config or
 `--algo_params` when using the CLI.
@@ -286,43 +286,43 @@ All parameters can be overridden via `algo_params` in the config or
 
 #### Unimodal
 
-| Function | Dim | Bounds | Optimum | Characteristics |
-|---|---|---|---|---|
-| Sphere | 30 | [-100, 100] | 0 | Unimodal, separable |
-| Rosenbrock | 30 | [-30, 30] | 0 | Unimodal, non-separable |
-| Schwefel 2.22 | 30 | [-10, 10] | 0 | Unimodal, separable |
-| Quartic | 30 | [-1.28, 1.28] | 0 | Unimodal, separable, noisy |
+| Function      | Dim | Bounds        | Optimum | Characteristics            |
+| ------------- | --- | ------------- | ------- | -------------------------- |
+| Sphere        | 30  | [-100, 100]   | 0       | Unimodal, separable        |
+| Rosenbrock    | 30  | [-30, 30]     | 0       | Unimodal, non-separable    |
+| Schwefel 2.22 | 30  | [-10, 10]     | 0       | Unimodal, separable        |
+| Quartic       | 30  | [-1.28, 1.28] | 0       | Unimodal, separable, noisy |
 
 #### Multimodal
 
-| Function | Dim | Bounds | Optimum | Characteristics |
-|---|---|---|---|---|
-| Rastrigin | 30 | [-5.12, 5.12] | 0 | Multimodal, separable |
-| Ackley | 30 | [-32.768, 32.768] | 0 | Multimodal, non-separable |
-| Griewank | 30 | [-600, 600] | 0 | Multimodal, non-separable |
-| Levy | 30 | [-10, 10] | 0 | Multimodal, non-separable |
-| Schwefel | 30 | [-500, 500] | 0 | Multimodal, separable |
-| Michalewicz | 30 | [0, π] | varies | Multimodal, separable |
+| Function    | Dim | Bounds            | Optimum | Characteristics           |
+| ----------- | --- | ----------------- | ------- | ------------------------- |
+| Rastrigin   | 30  | [-5.12, 5.12]     | 0       | Multimodal, separable     |
+| Ackley      | 30  | [-32.768, 32.768] | 0       | Multimodal, non-separable |
+| Griewank    | 30  | [-600, 600]       | 0       | Multimodal, non-separable |
+| Levy        | 30  | [-10, 10]         | 0       | Multimodal, non-separable |
+| Schwefel    | 30  | [-500, 500]       | 0       | Multimodal, separable     |
+| Michalewicz | 30  | [0, π]            | varies  | Multimodal, separable     |
 
 #### Engineering
 
-| Problem | Dim | Bounds | Optimum |
-|---|---|---|---|
-| Pressure Vessel | 4 | see source | ≈ 6059.71 |
+| Problem         | Dim | Bounds     | Optimum   |
+| --------------- | --- | ---------- | --------- |
+| Pressure Vessel | 4   | see source | ≈ 6059.71 |
 
 ### CEC Competition Benchmarks (144 functions)
 
 Requires `opfunu` package (`pip install opfunu`).
 
-| Suite | Functions | Default Dim | Supported Dims | Description |
-|---|---|---|---|---|
-| CEC 2005 | F1–F25 (25) | 30 | 10, 30, 50 | Shifted, rotated, hybrid functions |
-| CEC 2013 | F1–F28 (28) | 30 | 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | Shifted, rotated, composition functions |
-| CEC 2014 | F1–F30 (30) | 30 | 10, 20, 30, 50, 100 | Shifted, rotated, composition functions |
-| CEC 2017 | F1–F29 (29) | 30 | 2, 10, 20, 30, 50, 100 | Shifted, rotated, hybrid, composition |
-| CEC 2019 | F1–F10 (10) | varies | F1=9, F2=16, F3=18, F4-F10=10 (fixed) | Fixed-dimension functions |
-| CEC 2020 | F1–F10 (10) | 30 | 2, 5, 10, 15, 20, 30, 50, 100 | Shifted, rotated functions |
-| CEC 2022 | F1–F12 (12) | 10 | 2, 10, 20 | Shifted, rotated, hybrid functions |
+| Suite    | Functions   | Default Dim | Supported Dims                                | Description                             |
+| -------- | ----------- | ----------- | --------------------------------------------- | --------------------------------------- |
+| CEC 2005 | F1–F25 (25) | 30          | 10, 30, 50                                    | Shifted, rotated, hybrid functions      |
+| CEC 2013 | F1–F28 (28) | 30          | 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 | Shifted, rotated, composition functions |
+| CEC 2014 | F1–F30 (30) | 30          | 10, 20, 30, 50, 100                           | Shifted, rotated, composition functions |
+| CEC 2017 | F1–F29 (29) | 30          | 2, 10, 20, 30, 50, 100                        | Shifted, rotated, hybrid, composition   |
+| CEC 2019 | F1–F10 (10) | varies      | F1=9, F2=16, F3=18, F4-F10=10 (fixed)         | Fixed-dimension functions               |
+| CEC 2020 | F1–F10 (10) | 30          | 2, 5, 10, 15, 20, 30, 50, 100                 | Shifted, rotated functions              |
+| CEC 2022 | F1–F12 (12) | 10          | 2, 10, 20                                     | Shifted, rotated, hybrid functions      |
 
 Individual functions are registered as `cec20XX_fY` (e.g. `cec2017_f1`). Use suite names (e.g. `cec2017`) to run all functions in a suite at once. Use `--dim all` to test all supported dimensions for a suite.
 
@@ -332,21 +332,21 @@ Individual functions are registered as `cec20XX_fY` (e.g. `cec2017_f1`). Use sui
 
 ### Main Arguments
 
-| Argument | Type | Default | Description |
-|---|---|---|---|
-| `--algorithms` | str+ | `pso` | Algorithm names (e.g. `pso ga de_nfe`) |
-| `--problems` | str+ | `sphere` | Problem names or suite names (e.g. `sphere cec2017`) |
-| `--dim` | str+ | `30` | Dimension(s) per problem, or `all` for all supported dims |
-| `--max_iter` | int | `500` | Max iterations per run (iteration-based) |
-| `--stopping_criterion` | str | `iterations` | `iterations` or `nfe` |
-| `--max_nfe` | int | `10000` | Max function evaluations (NFE-based) |
-| `--runs` | int | `30` | Number of independent runs |
-| `--seed` | int | `42` | Base random seed |
-| `--pop_size` | int | `None` | Population size override |
-| `--plots` | str+ | all | Plot types: `convergence boxplot heatmap` |
-| `--save_results` | flag | `True` | Save results to disk |
-| `--verbose` | flag | `False` | Print per-iteration info |
-| `--base_dir` | str | `results` | Output directory |
+| Argument               | Type | Default      | Description                                               |
+| ---------------------- | ---- | ------------ | --------------------------------------------------------- |
+| `--algorithms`         | str+ | `pso`        | Algorithm names (e.g. `pso ga de_nfe`)                    |
+| `--problems`           | str+ | `sphere`     | Problem names or suite names (e.g. `sphere cec2017`)      |
+| `--dim`                | str+ | `30`         | Dimension(s) per problem, or `all` for all supported dims |
+| `--max_iter`           | int  | `500`        | Max iterations per run (iteration-based)                  |
+| `--stopping_criterion` | str  | `iterations` | `iterations` or `nfe`                                     |
+| `--max_nfe`            | int  | `10000`      | Max function evaluations (NFE-based)                      |
+| `--runs`               | int  | `30`         | Number of independent runs                                |
+| `--seed`               | int  | `42`         | Base random seed                                          |
+| `--pop_size`           | int  | `None`       | Population size override                                  |
+| `--plots`              | str+ | all          | Plot types: `convergence boxplot heatmap`                 |
+| `--save_results`       | flag | `True`       | Save results to disk                                      |
+| `--verbose`            | flag | `False`      | Print per-iteration info                                  |
+| `--base_dir`           | str  | `results`    | Output directory                                          |
 
 ### Examples
 
@@ -393,12 +393,12 @@ python experiments/run_benchmark.py \
 
 ## 7. Visualisation
 
-| Plot Type | Function | Description |
-|---|---|---|
+| Plot Type         | Function                      | Description                                                              |
+| ----------------- | ----------------------------- | ------------------------------------------------------------------------ |
 | Convergence Curve | `plot_convergence_comparison` | Mean ± std fitness over iterations with semi-transparent confidence band |
-| Box-Plot | `plot_boxplot` | Standard box-plot of final fitness across runs; mean shown as diamond |
-| Heatmap | `plot_heatmap` | Algorithm × Problem matrix; cells show normalised mean fitness |
-| Fitness Landscape | `plot_fitness_landscape` | 2-D contour or 3-D surface with optional algorithm trajectory overlay |
+| Box-Plot          | `plot_boxplot`                | Standard box-plot of final fitness across runs; mean shown as diamond    |
+| Heatmap           | `plot_heatmap`                | Algorithm × Problem matrix; cells show normalised mean fitness           |
+| Fitness Landscape | `plot_fitness_landscape`      | 2-D contour or 3-D surface with optional algorithm trajectory overlay    |
 
 All plots accept `save_path`, `dpi`, and `figsize` parameters.
 Use the `PlotManager` class for a unified interface.
@@ -595,13 +595,13 @@ results/
             └── heatmap.png
 ```
 
-| File | Contents |
-|---|---|
-| `config.yaml` | Every parameter used in the experiment (YAML format) |
+| File              | Contents                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| `config.yaml`     | Every parameter used in the experiment (YAML format)                                    |
 | `raw_results.csv` | One row per run: algorithm, problem, run_id, best_fitness, seed, nfe, iterations, x0…xN |
-| `convergence.csv` | One column per run: best-so-far fitness at each iteration |
-| `summary.csv` | Mean, std, min, max, median of final fitness + mean NFE across runs |
-| `figures/` | Auto-generated plots (convergence, boxplot, heatmap) |
+| `convergence.csv` | One column per run: best-so-far fitness at each iteration                               |
+| `summary.csv`     | Mean, std, min, max, median of final fitness + mean NFE across runs                     |
+| `figures/`        | Auto-generated plots (convergence, boxplot, heatmap)                                    |
 
 ---
 
@@ -650,13 +650,13 @@ A: Not yet. ATLAS currently supports single-objective optimisation only.
 
 ## 13. Dependencies
 
-| Package | Version | Purpose |
-|---|---|---|
-| `numpy` | >=1.24 | Numerical computing |
-| `matplotlib` | >=3.7 | Plotting |
-| `pyyaml` | >=6.0 | Config file parsing |
-| `tqdm` | >=4.65 | Progress bars |
-| `opfunu` | >=1.0.0 | CEC benchmark functions (optional) |
+| Package      | Version | Purpose                            |
+| ------------ | ------- | ---------------------------------- |
+| `numpy`      | >=1.24  | Numerical computing                |
+| `matplotlib` | >=3.7   | Plotting                           |
+| `pyyaml`     | >=6.0   | Config file parsing                |
+| `tqdm`       | >=4.65  | Progress bars                      |
+| `opfunu`     | >=1.0.0 | CEC benchmark functions (optional) |
 
 Install all dependencies: `pip install -r requirements.txt`
 Install with CEC support: `pip install -e ".[cec]"`

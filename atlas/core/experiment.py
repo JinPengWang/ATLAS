@@ -130,9 +130,9 @@ class Experiment:
                         "algo_params": cfg.algo_params.get(algo_name, {}),
                     })
 
-        # Optional: multi-algorithm plots
-        if cfg.save_results and len(cfg.algorithms) > 1:
-            self._generate_comparative_plots(all_results, dims)
+        # Optional: plots (always generate if save_results is True)
+        if cfg.save_results:
+            self._generate_plots(all_results, dims)
 
         return all_results
 
@@ -195,9 +195,9 @@ class Experiment:
         return results
 
     # ------------------------------------------------------------------
-    # Comparative plots
+    # Plot generation
     # ------------------------------------------------------------------
-    def _generate_comparative_plots(
+    def _generate_plots(
         self,
         all_results: Dict[str, Dict[str, List[Result]]],
         dims: List[int],
@@ -206,36 +206,39 @@ class Experiment:
 
         cfg = self.config
         pm = PlotManager()
+        is_comparison = len(cfg.algorithms) > 1
 
-        # Convergence comparison
+        # Convergence plot (always generate)
         if cfg.enable_plots.get("convergence", False):
             for prob_name in cfg.problems:
                 fig = pm.plot_convergence(
                     all_results[prob_name],
                     title=f"Convergence on {prob_name}",
                 )
-                if fig is not None and cfg.save_results:
-                    saver = ExperimentSaver(prob_name, "comparison", cfg.base_dir)
-                    saver.save_plot(fig, "convergence_comparison")
+                if fig is not None:
+                    label = "comparison" if is_comparison else cfg.algorithms[0]
+                    saver = ExperimentSaver(prob_name, label, cfg.base_dir)
+                    saver.save_plot(fig, f"convergence_{prob_name}")
 
-        # Box-plot comparison
+        # Box-plot (always generate)
         if cfg.enable_plots.get("boxplot", False):
             for prob_name in cfg.problems:
                 fig = pm.plot_boxplot(
                     all_results[prob_name],
                     title=f"Results on {prob_name}",
                 )
-                if fig is not None and cfg.save_results:
-                    saver = ExperimentSaver(prob_name, "comparison", cfg.base_dir)
-                    saver.save_plot(fig, "boxplot_comparison")
+                if fig is not None:
+                    label = "comparison" if is_comparison else cfg.algorithms[0]
+                    saver = ExperimentSaver(prob_name, label, cfg.base_dir)
+                    saver.save_plot(fig, f"boxplot_{prob_name}")
 
-        # Heatmap
-        if cfg.enable_plots.get("heatmap", False):
+        # Heatmap (only for multi-algorithm comparison)
+        if cfg.enable_plots.get("heatmap", False) and is_comparison:
             fig = pm.plot_heatmap(
                 all_results,
                 algo_names=cfg.algorithms,
                 problem_names=cfg.problems,
             )
-            if fig is not None and cfg.save_results:
+            if fig is not None:
                 saver = ExperimentSaver("all_problems", "comparison", cfg.base_dir)
                 saver.save_plot(fig, "heatmap")
