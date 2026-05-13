@@ -1,0 +1,73 @@
+# =============================================================
+#  ATLAS – Default Experiment Configuration
+# =============================================================
+#  This file documents every tuneable parameter.  Copy and edit
+#  to create your own experiment configs.
+# =============================================================
+
+# ----- Problem settings ----------------------------------------
+problems:
+  - sphere          # problem names (must be registered)
+  - rastrigin
+  - ackley
+
+dims:
+  - 30              # dimensionality per problem (single value broadcasts)
+
+# ----- Algorithm settings --------------------------------------
+algorithms:
+  - pso
+  - ga
+  - de
+  - woa
+  - sa
+  - aco
+
+# Per-algorithm hyper-parameter overrides.
+# Keys must match the keyword arguments of the algorithm class.
+algo_params:
+  pso:
+    w: 0.7          # inertia weight
+    c1: 1.5         # cognitive coefficient
+    c2: 1.5         # social coefficient
+    pop_size: 30
+  ga:
+    crossover_prob: 0.8
+    mutation_prob: 0.01
+    pop_size: 50
+    tournament_size: 3
+  de:
+    F: 0.8          # mutation scaling factor
+    CR: 0.9         # crossover rate
+    strategy: "rand/1/bin"
+    pop_size: 30
+  woa:
+    b: 1.0          # spiral shape constant
+    pop_size: 30
+  sa:
+    T_init: 1000.0  # initial temperature
+    T_min: 0.001    # minimum temperature
+    alpha: 0.95     # cooling rate
+  aco:
+    n_ants: 20
+    q: 0.1
+    xi: 0.85
+
+# ----- Experiment settings ------------------------------------
+max_iter: 500       # iterations per run
+runs: 30            # independent runs per (algorithm, problem)
+seed: 42            # base random seed (run i uses seed+i)
+pop_size: null      # global override (null = use algorithm defaults)
+verbose: false      # print per-iteration progress
+
+# ----- Output settings ----------------------------------------
+save_results: true
+base_dir: "results"
+
+# ----- Plotting settings --------------------------------------
+# Each key toggles a specific plot type.
+enable_plots:
+  convergence: true
+  boxplot: true
+  heatmap: true
+  fitness_landscape: false   # only works for 2-D problems

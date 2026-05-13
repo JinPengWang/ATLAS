@@ -1,0 +1,43 @@
+"""Optional setup script for ATLAS.
+
+Install in development mode::
+
+    pip install -e .
+"""
+
+from pathlib import Path
+
+from setuptools import find_packages, setup
+
+HERE = Path(__file__).parent
+
+setup(
+    name="atlas",
+    version="0.1.0",
+    description=(
+        "All-in-one Toolkit for Learning and Applying metaheuristicS (ATLAS) – "
+        "a modular metaheuristic algorithm research platform."
+    ),
+    long_description=(HERE / "README.md").read_text(encoding="utf-8"),
+    long_description_content_type="text/markdown",
+    author="ATLAS Contributors",
+    python_requires=">=3.8",
+    packages=find_packages(exclude=["tests", "experiments", "results", "docs"]),
+    install_requires=[
+        "numpy>=1.22,<2.0",
+        "scipy>=1.9,<2.0",
+        "matplotlib>=3.6,<4.0",
+        "seaborn>=0.12,<1.0",
+        "pandas>=1.5,<3.0",
+        "PyYAML>=6.0,<7.0",
+        "tqdm>=4.64,<5.0",
+    ],
+    extras_require={
+        "dev": ["pytest>=7.0", "black", "ruff", "isort"],
+    },
+    entry_points={
+        "console_scripts": [
+            "atlas-benchmark=experiments.run_benchmark:main",
+        ],
+    },
+)
