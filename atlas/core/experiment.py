@@ -42,6 +42,8 @@ class ExperimentConfig:
     runs: int = 30
     seed: int = 42
     pop_size: Optional[int] = None
+    stopping_criterion: str = "iterations"  # "iterations" or "nfe"
+    max_nfe: int = 10000
     algo_params: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     enable_plots: Dict[str, bool] = field(
         default_factory=lambda: {
@@ -81,7 +83,11 @@ class Experiment:
         Returns:
             Nested dict ``{problem_name: {algo_name: [Result, ...]}}``.
         """
+        from atlas.utils.problem_groups import expand_problem_names
+
         cfg = self.config
+        # Expand CEC suite group names (e.g. "cec2017" -> all cec2017_f*)
+        cfg.problems = expand_problem_names(cfg.problems)
         dims = self._broadcast_dims()
         all_results: Dict[str, Dict[str, List[Result]]] = {}
 
@@ -117,6 +123,8 @@ class Experiment:
                         "problem": prob_name,
                         "dim": dim,
                         "max_iter": cfg.max_iter,
+                        "stopping_criterion": cfg.stopping_criterion,
+                        "max_nfe": cfg.max_nfe,
                         "runs": cfg.runs,
                         "seed": cfg.seed,
                         "algo_params": cfg.algo_params.get(algo_name, {}),
@@ -157,6 +165,9 @@ class Experiment:
         params = dict(self.config.algo_params.get(algo_name, {}))
         if self.config.pop_size is not None:
             params.setdefault("pop_size", self.config.pop_size)
+        # Pass max_nfe for NFE-based algorithms (always, since they accept it)
+        if self.config.stopping_criterion == "nfe" or algo_name.endswith("_nfe"):
+            params["max_nfe"] = self.config.max_nfe
         return cls(
             problem=problem,
             max_iter=self.config.max_iter,

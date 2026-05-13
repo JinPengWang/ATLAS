@@ -1,15 +1,39 @@
 """Algorithms sub-package.
 
 Importing this package automatically registers all built-in algorithms
-via the :mod:`atlas.utils.registry` mechanism.  To add a new algorithm,
-create a module in this directory and add a corresponding import line here.
+via the :mod:`atlas.utils.registry` mechanism.
+
+Two variants exist for each algorithm:
+
+* **Iteration-based** (``atlas.algorithms.iteration``) – stops after
+  ``max_iter`` iterations.
+* **NFE-based** (``atlas.algorithms.nfe``) – stops after
+  ``max_nfe`` function evaluations.
 """
 
-from atlas.algorithms.aco import ACO
-from atlas.algorithms.de import DE
-from atlas.algorithms.ga import GA
-from atlas.algorithms.pso import PSO
-from atlas.algorithms.sa import SA
-from atlas.algorithms.woa import WOA
+from atlas.algorithms.iteration import ACO, DE, GA, PSO, SA, WOA
+from atlas.algorithms.nfe import (
+    ACO_NFE,
+    DE_NFE,
+    GA_NFE,
+    PSO_NFE,
+    SA_NFE,
+    WOA_NFE,
+)
 
-__all__ = ["ACO", "DE", "GA", "PSO", "SA", "WOA"]
+__all__ = [
+    # Iteration-based
+    "ACO",
+    "DE",
+    "GA",
+    "PSO",
+    "SA",
+    "WOA",
+    # NFE-based
+    "ACO_NFE",
+    "DE_NFE",
+    "GA_NFE",
+    "PSO_NFE",
+    "SA_NFE",
+    "WOA_NFE",
+]

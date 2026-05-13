@@ -31,6 +31,7 @@ import atlas  # noqa: E402  – triggers registration
 from atlas.core.experiment import Experiment, ExperimentConfig  # noqa: E402
 from atlas.core.result import Result  # noqa: E402
 from atlas.utils.logger import get_logger  # noqa: E402
+from atlas.utils.problem_groups import expand_problem_names, get_all_supported_dims  # noqa: E402
 
 
 def print_summary_table(
@@ -66,14 +67,16 @@ def run_benchmark(
     save_results: bool = True,
     verbose: bool = False,
     base_dir: str = "results",
+    stopping_criterion: str = "iterations",
+    max_nfe: int = 10000,
 ) -> Dict[str, Dict[str, List[Result]]]:
     """Run a benchmark experiment (also usable from Jupyter).
 
     Args:
-        algorithms: List of algorithm names.
+        algorithms: List of algorithm names (e.g. ``["pso", "ga_nfe"]``).
         problems: List of problem names.
-        dims: Dimension per problem (broadcasts if single element).
-        max_iter: Iterations per run.
+        dims: Dimension per problem (broadcasts if single element). Use ``[0]`` or ``[-1]`` for all supported dims.
+        max_iter: Iterations per run (for iteration-based algorithms).
         runs: Number of independent runs.
         seed: Base random seed.
         pop_size: Global population size override.
@@ -82,10 +85,20 @@ def run_benchmark(
         save_results: Persist results to disk.
         verbose: Print per-iteration info.
         base_dir: Root output directory.
+        stopping_criterion: ``"iterations"`` or ``"nfe"``.
+        max_nfe: Maximum function evaluations (for NFE-based algorithms).
 
     Returns:
         Nested dict ``{problem: {algo: [Result, ...]}}``.
     """
+    # Expand CEC suite group names (e.g. "cec2017" -> all cec2017_f* functions)
+    problems = expand_problem_names(problems)
+
+    # Handle "all" dimensions: use sentinel value -1
+    if dims is not None and len(dims) == 1 and dims[0] == -1:
+        dims = get_all_supported_dims(problems)
+        print(f"Testing all supported dimensions: {dims}")
+
     if dims is None:
         dims = [30]
     if algo_params is None:
@@ -113,6 +126,8 @@ def run_benchmark(
         save_results=save_results,
         verbose=verbose,
         base_dir=base_dir,
+        stopping_criterion=stopping_criterion,
+        max_nfe=max_nfe,
     )
 
     experiment = Experiment(config)
@@ -139,10 +154,15 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Problem names (default: sphere)",
     )
     parser.add_argument(
-        "--dim", type=int, nargs="+", default=[30],
-        help="Dimension(s) (default: 30)",
+        "--dim", type=str, nargs="+", default=["30"],
+        help="Dimension(s) or 'all' for all supported dims (default: 30)",
     )
     parser.add_argument("--max_iter", type=int, default=500, help="Max iterations")
+    parser.add_argument(
+        "--stopping_criterion", choices=["iterations", "nfe"], default="iterations",
+        help="Stopping criterion: 'iterations' or 'nfe' (default: iterations)",
+    )
+    parser.add_argument("--max_nfe", type=int, default=10000, help="Max function evaluations (for NFE-based)")
     parser.add_argument("--runs", type=int, default=30, help="Number of runs")
     parser.add_argument("--seed", type=int, default=42, help="Base random seed")
     parser.add_argument("--pop_size", type=int, default=None, help="Population size override")
@@ -162,10 +182,15 @@ def _build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
+    # Parse dim arguments: convert "all" to [-1] sentinel, otherwise convert to int
+    if len(args.dim) == 1 and args.dim[0].lower() == "all":
+        dims = [-1]
+    else:
+        dims = [int(d) for d in args.dim]
     run_benchmark(
         algorithms=args.algorithms,
         problems=args.problems,
-        dims=args.dim,
+        dims=dims,
         max_iter=args.max_iter,
         runs=args.runs,
         seed=args.seed,
@@ -174,6 +199,8 @@ def main() -> None:
         save_results=args.save_results,
         verbose=args.verbose,
         base_dir=args.base_dir,
+        stopping_criterion=args.stopping_criterion,
+        max_nfe=args.max_nfe,
     )
 
 

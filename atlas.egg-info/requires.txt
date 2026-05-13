@@ -1,0 +1,16 @@
+numpy<2.0,>=1.22
+scipy<2.0,>=1.9
+matplotlib<4.0,>=3.6
+seaborn<1.0,>=0.12
+pandas<3.0,>=1.5
+PyYAML<7.0,>=6.0
+tqdm<5.0,>=4.64
+
+[cec]
+opfunu>=1.0.0
+
+[dev]
+pytest>=7.0
+black
+ruff
+isort

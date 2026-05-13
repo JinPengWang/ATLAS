@@ -34,6 +34,7 @@ setup(
     ],
     extras_require={
         "dev": ["pytest>=7.0", "black", "ruff", "isort"],
+        "cec": ["opfunu>=1.0.0"],
     },
     entry_points={
         "console_scripts": [

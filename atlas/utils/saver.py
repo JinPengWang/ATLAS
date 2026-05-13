@@ -82,6 +82,8 @@ class ExperimentSaver:
                 "run": res.run_id,
                 "best_fitness": res.best_fitness,
                 "seed": res.seed,
+                "iterations": res.iterations,
+                "nfe": res.nfe,
             }
             row.update(res.best_solution_dict())
             rows.append(row)
@@ -103,6 +105,7 @@ class ExperimentSaver:
             Path to the saved CSV file.
         """
         fitness_vals = np.array([r.best_fitness for r in results])
+        nfe_vals = np.array([r.nfe for r in results])
         summary = {
             "algorithm": [results[0].algorithm_name],
             "problem": [results[0].problem_name],
@@ -112,6 +115,7 @@ class ExperimentSaver:
             "best": [np.min(fitness_vals)],
             "worst": [np.max(fitness_vals)],
             "median": [np.median(fitness_vals)],
+            "mean_nfe": [np.mean(nfe_vals)],
         }
         df = pd.DataFrame(summary)
         path = self.exp_dir / "summary.csv"
