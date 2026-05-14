@@ -11,13 +11,19 @@ Two variants exist for each algorithm:
   ``max_nfe`` function evaluations.
 """
 
-from atlas.algorithms.iteration import ACO, DE, GA, PSO, SA, WOA
+from atlas.algorithms.iteration import ACO, DE, DP, GA, LEA, LGC, PPO, PSO, PSA, SA, TJO, WOA
 from atlas.algorithms.nfe import (
     ACO_NFE,
     DE_NFE,
+    DP_NFE,
     GA_NFE,
+    LEA_NFE,
+    LGC_NFE,
+    PPO_NFE,
     PSO_NFE,
+    PSA_NFE,
     SA_NFE,
+    TJO_NFE,
     WOA_NFE,
 )
 
@@ -25,15 +31,27 @@ __all__ = [
     # Iteration-based
     "ACO",
     "DE",
+    "DP",
     "GA",
+    "LEA",
+    "LGC",
+    "PPO",
     "PSO",
+    "PSA",
     "SA",
+    "TJO",
     "WOA",
     # NFE-based
     "ACO_NFE",
     "DE_NFE",
+    "DP_NFE",
     "GA_NFE",
+    "LEA_NFE",
+    "LGC_NFE",
+    "PPO_NFE",
     "PSO_NFE",
+    "PSA_NFE",
     "SA_NFE",
+    "TJO_NFE",
     "WOA_NFE",
 ]

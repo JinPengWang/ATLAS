@@ -23,10 +23,10 @@ from experiments.run_benchmark import run_benchmark  # noqa: E402
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="ATLAS – Multi-algorithm comparison")
+    parser = argparse.ArgumentParser(description="ATLAS multi-algorithm comparison")
     parser.add_argument(
         "--algorithms", nargs="+",
-        default=["pso", "ga", "de", "woa", "sa", "aco"],
+        default=["pso", "ga", "de", "dp", "tjo", "lgc", "ppo", "lea", "psa", "woa", "sa", "aco"],
         help="Algorithms to compare",
     )
     parser.add_argument(

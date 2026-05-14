@@ -41,7 +41,10 @@ class TestRegistration:
         assert len(algos) > 0
 
     def test_all_expected_registered(self):
-        expected = {"pso", "ga", "de", "sa", "woa", "aco"}
+        expected = {
+            "pso", "ga", "de", "sa", "woa", "aco", "dp",
+            "tjo", "lgc", "ppo", "lea", "psa",
+        }
         registered = set(list_algorithms())
         assert expected.issubset(registered)
 
@@ -54,7 +57,10 @@ class TestRegistration:
 class TestAlgorithmRun:
     """Test that every algorithm can run on Sphere for 10 iterations."""
 
-    @pytest.mark.parametrize("algo_name", ["pso", "ga", "de", "sa", "woa", "aco"])
+    @pytest.mark.parametrize("algo_name", [
+        "pso", "ga", "de", "sa", "woa", "aco", "dp",
+        "tjo", "lgc", "ppo", "lea", "psa",
+    ])
     def test_algorithm_runs(self, algo_name, sphere_problem, short_run_params):
         cls = get_algorithm(algo_name)
         algo = cls(problem=sphere_problem, **short_run_params)
@@ -67,7 +73,10 @@ class TestAlgorithmRun:
         assert len(result.convergence_curve) == 10
         assert np.isfinite(result.best_fitness)
 
-    @pytest.mark.parametrize("algo_name", ["pso", "ga", "de", "sa", "woa", "aco"])
+    @pytest.mark.parametrize("algo_name", [
+        "pso", "ga", "de", "sa", "woa", "aco", "dp",
+        "tjo", "lgc", "ppo", "lea", "psa",
+    ])
     def test_algorithm_improves(self, algo_name, sphere_problem, short_run_params):
         """Fitness should not increase over iterations."""
         cls = get_algorithm(algo_name)
@@ -80,7 +89,7 @@ class TestAlgorithmRun:
                 f"{curve[i-1]:.6e} -> {curve[i]:.6e}"
             )
 
-    @pytest.mark.parametrize("algo_name", ["pso", "de"])
+    @pytest.mark.parametrize("algo_name", ["pso", "de", "dp", "tjo", "lgc", "ppo", "lea", "psa"])
     def test_reproducibility(self, algo_name, sphere_problem, short_run_params):
         """Same seed should produce identical results."""
         cls = get_algorithm(algo_name)

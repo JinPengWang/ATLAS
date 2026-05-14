@@ -27,14 +27,18 @@ def sphere_problem():
 # ---- Registration tests ---------------------------------------------
 class TestRegistration:
     def test_nfe_algorithms_registered(self):
-        expected = {"pso_nfe", "ga_nfe", "de_nfe", "sa_nfe", "woa_nfe", "aco_nfe"}
+        expected = {
+            "pso_nfe", "ga_nfe", "de_nfe", "sa_nfe",
+            "woa_nfe", "aco_nfe", "dp_nfe",
+            "tjo_nfe", "lgc_nfe", "ppo_nfe", "lea_nfe", "psa_nfe",
+        }
         registered = set(list_algorithms())
         assert expected.issubset(registered)
 
     def test_total_algorithm_count(self):
-        """Should have 12 algorithms (6 iteration + 6 NFE)."""
+        """Should have 24 algorithms (12 iteration + 12 NFE)."""
         algos = list_algorithms()
-        assert len(algos) >= 12
+        assert len(algos) >= 24
 
 
 # ---- Run tests ------------------------------------------------------
@@ -42,7 +46,8 @@ class TestNFEAlgorithmRun:
     """Test that every NFE algorithm can run on Sphere."""
 
     @pytest.mark.parametrize("algo_name", [
-        "pso_nfe", "ga_nfe", "de_nfe", "sa_nfe", "woa_nfe", "aco_nfe",
+        "pso_nfe", "ga_nfe", "de_nfe", "sa_nfe", "woa_nfe", "aco_nfe", "dp_nfe",
+        "tjo_nfe", "lgc_nfe", "ppo_nfe", "lea_nfe", "psa_nfe",
     ])
     def test_algorithm_runs(self, algo_name, sphere_problem):
         cls = get_algorithm(algo_name)
@@ -58,7 +63,8 @@ class TestNFEAlgorithmRun:
         assert len(result.convergence_curve) > 0
 
     @pytest.mark.parametrize("algo_name", [
-        "pso_nfe", "ga_nfe", "de_nfe", "sa_nfe", "woa_nfe", "aco_nfe",
+        "pso_nfe", "ga_nfe", "de_nfe", "sa_nfe", "woa_nfe", "aco_nfe", "dp_nfe",
+        "tjo_nfe", "lgc_nfe", "ppo_nfe", "lea_nfe", "psa_nfe",
     ])
     def test_algorithm_improves(self, algo_name, sphere_problem):
         """Fitness should not increase over iterations."""
@@ -72,7 +78,10 @@ class TestNFEAlgorithmRun:
                 f"{curve[i-1]:.6e} -> {curve[i]:.6e}"
             )
 
-    @pytest.mark.parametrize("algo_name", ["pso_nfe", "de_nfe"])
+    @pytest.mark.parametrize("algo_name", [
+        "pso_nfe", "de_nfe", "dp_nfe", "tjo_nfe", "lgc_nfe",
+        "ppo_nfe", "lea_nfe", "psa_nfe",
+    ])
     def test_reproducibility(self, algo_name, sphere_problem):
         """Same seed should produce identical results."""
         cls = get_algorithm(algo_name)
