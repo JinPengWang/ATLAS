@@ -1,10 +1,10 @@
 """Problems sub-package.
 
 Importing this package automatically registers all built-in benchmark,
-custom, and engineering problems via the :mod:`atlas.utils.registry` mechanism.
+custom, engineering, and pure-Python CEC problems via the :mod:`atlas.utils.registry` mechanism.
 
-CEC benchmark functions (2005-2022) are registered when ``opfunu`` is
-installed (``pip install opfunu``).
+CEC benchmark functions (2005-2022) with opfunu C extensions are also registered
+when ``opfunu`` is installed (``pip install opfunu``).
 """
 
 from atlas.problems.benchmark import (
@@ -19,6 +19,7 @@ from atlas.problems.benchmark import (
     Schwefel222,
     Sphere,
 )
+import atlas.problems.cec_pure  # registers pure Python CEC problems
 from atlas.problems.custom import PressureVessel
 from atlas.problems.engineering import (
     PressureVesselEng,
