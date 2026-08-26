@@ -42,7 +42,7 @@ class PressureVessel(BaseProblem):
 
         g1(x) = -x0 + 0.0193 x2 <= 0
         g2(x) = -x1 + 0.00954 x2 <= 0
-        g3(x) = -π x2² x3 - 4/3 π x3³ + 1296000 <= 0
+        g3(x) = -π x2² x3 - 4/3 π x2³ + 1296000 <= 0
         g4(x) = x3 - 240 <= 0
 
     Bounds::
@@ -87,11 +87,12 @@ class PressureVessel(BaseProblem):
         # Constraints (g <= 0)
         g1 = -x_c[0] + 0.0193 * x_c[2]
         g2 = -x_c[1] + 0.00954 * x_c[2]
-        g3 = -np.pi * x_c[2] ** 2 * x_c[3] - (4.0 / 3.0) * np.pi * x_c[3] ** 3 + 1_296_000.0
+        g3 = -np.pi * x_c[2] ** 2 * x_c[3] - (4.0 / 3.0) * np.pi * x_c[2] ** 3 + 1_296_000.0
         g4 = x_c[3] - 240.0
 
         violation = max(0, g1) + max(0, g2) + max(0, g3) + max(0, g4)
         return base + self.penalty_weight * violation
+
 
     def get_bounds(self) -> Tuple[np.ndarray, np.ndarray]:
         return self._lb.copy(), self._ub.copy()
@@ -103,4 +104,5 @@ class PressureVessel(BaseProblem):
         return 6059.714335
 
     def get_optimum_location(self) -> Optional[np.ndarray]:
-        return np.array([0.8125, 0.4375, 42.0984, 176.6366])
+        return np.array([0.8125, 0.4375, 42.098446, 176.636596])
+

@@ -1,7 +1,7 @@
 """Problems sub-package.
 
-Importing this package automatically registers all built-in benchmark and
-custom problems via the :mod:`atlas.utils.registry` mechanism.
+Importing this package automatically registers all built-in benchmark,
+custom, and engineering problems via the :mod:`atlas.utils.registry` mechanism.
 
 CEC benchmark functions (2005-2022) are registered when ``opfunu`` is
 installed (``pip install opfunu``).
@@ -20,6 +20,13 @@ from atlas.problems.benchmark import (
     Sphere,
 )
 from atlas.problems.custom import PressureVessel
+from atlas.problems.engineering import (
+    PressureVesselEng,
+    SpeedReducer,
+    SpringDesign,
+    Truss3Bar,
+    WeldedBeam,
+)
 
 __all__ = [
     # Unimodal
@@ -36,6 +43,11 @@ __all__ = [
     "Michalewicz",
     # Custom / engineering
     "PressureVessel",
+    "WeldedBeam",
+    "SpringDesign",
+    "SpeedReducer",
+    "Truss3Bar",
+    "PressureVesselEng",
 ]
 
 # ---------------------------------------------------------------------------
