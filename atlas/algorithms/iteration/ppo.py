@@ -24,26 +24,21 @@ def _levy_flight(rng: np.random.Generator, n: int, d: int) -> np.ndarray:
     return u / (np.abs(v) ** (1 / beta) + np.finfo(float).eps)
 
 
-@register_algorithm("ppo")
+@register_algorithm("ppo", aliases=["ppo_nfe"])
 class PPO(BaseAlgorithm):
     """Philoponella Prominens Optimizer."""
 
-    def get_name(self) -> str:
-        return "PPO"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self.memory_x = self.population.copy()
         self.memory_f = self.fitness.copy()
         self.distance = np.zeros(self.pop_size)
         self._update_global_best()
 
     def iterate(self, iter_idx: int) -> float:
-        progress = iter_idx / max(self.max_iter - 1, 1)
+        total_it = max(self.max_iter - 1, 1) if self.max_iter > 0 else 500
+        progress = min(iter_idx / total_it, 1.0)
         female_x = self.memory_x[self.rng.permutation(self.pop_size)]
         strong = np.max(self.fitness) + np.min(self.fitness) - self.fitness
         strong = strong / (np.max(strong) + np.finfo(float).eps)
@@ -66,11 +61,11 @@ class PPO(BaseAlgorithm):
 
         self.population = self._clip(self.population)
         for i in range(self.pop_size):
-            self.fitness[i] = self.problem.evaluate_with_penalty(self.population[i])
+            self.fitness[i] = self.evaluate(self.population[i])
 
         improved = self.fitness < self.memory_f
         self.memory_f[improved] = self.fitness[improved]
         self.memory_x[improved] = self.population[improved]
-        self._update_global_best()
         return self.g_best_f
+
 

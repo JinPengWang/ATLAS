@@ -11,7 +11,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("tjo")
+@register_algorithm("tjo", aliases=["tjo_nfe"])
 class TJO(BaseAlgorithm):
     """Traffic Jam Optimizer.
 
@@ -36,25 +36,20 @@ class TJO(BaseAlgorithm):
         c: Tuple[float, float] = (2.0, 0.0),
         **kwargs: Any,
     ) -> None:
-        super().__init__(problem, max_iter, pop_size, seed, verbose, a=a, c=c, **kwargs)
+        super().__init__(problem, max_iter=max_iter, pop_size=pop_size, seed=seed, verbose=verbose, a=a, c=c, **kwargs)
         self.a_range = a
         self.c_range = c
 
-    def get_name(self) -> str:
-        return "TJO"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self.memory_x = self.population.copy()
         self.memory_f = self.fitness.copy()
         self._update_global_best()
 
     def iterate(self, iter_idx: int) -> float:
-        progress = (iter_idx + 1) / max(self.max_iter, 1)
+        total_it = max(self.max_iter, 1) if self.max_iter > 0 else 500
+        progress = min((iter_idx + 1) / total_it, 1.0)
         a_t = self.a_range[0] + progress * (self.a_range[1] - self.a_range[0])
         c_t = self.c_range[0] + progress * (self.c_range[1] - self.c_range[0])
 
@@ -79,12 +74,12 @@ class TJO(BaseAlgorithm):
         x = self._clip(x)
 
         for i in range(self.pop_size):
-            self.fitness[i] = self.problem.evaluate_with_penalty(x[i])
+            self.fitness[i] = self.evaluate(x[i])
 
         improved = self.fitness < self.memory_f
         self.memory_f[improved] = self.fitness[improved]
         self.memory_x[improved] = x[improved]
         self.population = x
-        self._update_global_best()
         return self.g_best_f
+
 

@@ -16,7 +16,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("sa")
+@register_algorithm("sa", aliases=["sa_nfe"])
 class SA(BaseAlgorithm):
     """Simulated Annealing.
 
@@ -49,7 +49,7 @@ class SA(BaseAlgorithm):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            problem, max_iter, 1, seed, verbose,
+            problem, max_iter=max_iter, pop_size=1, seed=seed, verbose=verbose,
             T_init=T_init, T_min=T_min, alpha=alpha, step_size=step_size,
             **kwargs,
         )
@@ -59,18 +59,12 @@ class SA(BaseAlgorithm):
         self.step_size = step_size
         self.pop_size = 1  # SA is a single-solution method
 
-    def get_name(self) -> str:
-        return "SA"
-
     def initialize(self) -> None:
         # Random initial solution
         self.current_x = self.rng.uniform(self.lb, self.ub)
-        self.current_f = self.problem.evaluate_with_penalty(self.current_x)
+        self.current_f = self.evaluate(self.current_x)
         self.best_x = self.current_x.copy()
         self.best_f = self.current_f
-
-        self.g_best_x = self.best_x.copy()
-        self.g_best_f = self.best_f
 
         self.population = self.current_x.reshape(1, -1)
         self.fitness = np.array([self.current_f])
@@ -85,7 +79,7 @@ class SA(BaseAlgorithm):
         # Generate neighbour via Gaussian perturbation
         candidate = self.current_x + self.rng.normal(0, self._sigma)
         candidate = self._clip(candidate)
-        candidate_f = self.problem.evaluate_with_penalty(candidate)
+        candidate_f = self.evaluate(candidate)
 
         # Metropolis acceptance criterion
         delta = candidate_f - self.current_f
@@ -102,9 +96,8 @@ class SA(BaseAlgorithm):
                 self.best_x = candidate.copy()
                 self.best_f = candidate_f
 
-        self.g_best_x = self.best_x.copy()
-        self.g_best_f = self.best_f
         self.population = self.best_x.reshape(1, -1)
         self.fitness = np.array([self.best_f])
 
         return self.g_best_f
+

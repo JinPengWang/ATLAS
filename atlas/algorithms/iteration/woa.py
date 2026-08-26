@@ -16,7 +16,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("woa")
+@register_algorithm("woa", aliases=["woa_nfe"])
 class WOA(BaseAlgorithm):
     """Whale Optimisation Algorithm.
 
@@ -39,23 +39,18 @@ class WOA(BaseAlgorithm):
         b: float = 1.0,
         **kwargs: Any,
     ) -> None:
-        super().__init__(problem, max_iter, pop_size, seed, verbose, b=b, **kwargs)
+        super().__init__(problem, max_iter=max_iter, pop_size=pop_size, seed=seed, verbose=verbose, b=b, **kwargs)
         self.b = b
 
-    def get_name(self) -> str:
-        return "WOA"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
 
     def iterate(self, iter_idx: int) -> float:
+        total_it = max(self.max_iter - 1, 1) if self.max_iter > 0 else 500
         # Linearly decreasing a: 2 → 0
-        a = 2.0 - 2.0 * iter_idx / max(self.max_iter - 1, 1)
+        a = 2.0 - 2.0 * min(iter_idx / total_it, 1.0)
 
         for i in range(self.pop_size):
             r1 = self.rng.random()
@@ -86,7 +81,7 @@ class WOA(BaseAlgorithm):
                 )
 
             self.population[i] = self._clip(self.population[i])
-            self.fitness[i] = self.problem.evaluate_with_penalty(self.population[i])
+            self.fitness[i] = self.evaluate(self.population[i])
 
-        self._update_global_best()
         return self.g_best_f
+

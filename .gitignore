@@ -1,1 +1,10 @@
 /results
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.pytest_temp/
+.superpowers/
+*.egg-info/
+build/
+dist/

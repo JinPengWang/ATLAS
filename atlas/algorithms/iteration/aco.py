@@ -16,7 +16,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("aco")
+@register_algorithm("aco", aliases=["aco_nfe"])
 class ACO(BaseAlgorithm):
     """Ant Colony Optimisation for continuous domains (ACO-R variant).
 
@@ -50,7 +50,7 @@ class ACO(BaseAlgorithm):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            problem, max_iter, n_ants, seed, verbose,
+            problem, max_iter=max_iter, pop_size=n_ants, seed=seed, verbose=verbose,
             n_ants=n_ants, q=q, xi=xi, **kwargs,
         )
         self.n_ants = n_ants
@@ -60,26 +60,15 @@ class ACO(BaseAlgorithm):
         # Archive size (number of stored Gaussian kernels)
         self.k = max(10, n_ants)
 
-    def get_name(self) -> str:
-        return "ACO"
-
     def initialize(self) -> None:
         # Build initial archive by random sampling
         archive_size = self.k
-        self.archive_x = self.rng.uniform(self.lb, self.ub, size=(archive_size, self.dim))
-        self.archive_f = np.array([
-            self.problem.evaluate_with_penalty(self.archive_x[i])
-            for i in range(archive_size)
-        ])
+        self.archive_x = self.init_population(archive_size)
+        self.archive_f = self.evaluate_population(self.archive_x)
         # Sort archive by fitness (ascending)
         order = np.argsort(self.archive_f)
         self.archive_x = self.archive_x[order]
         self.archive_f = self.archive_f[order]
-
-        # Set global best
-        best_idx = 0
-        self.g_best_x = self.archive_x[best_idx].copy()
-        self.g_best_f = float(self.archive_f[best_idx])
 
         self.population = self.archive_x.copy()
         self.fitness = self.archive_f.copy()
@@ -92,13 +81,12 @@ class ACO(BaseAlgorithm):
         weights = np.exp(-self.q * archive_size * (ranks / archive_size) ** 2)
         weights /= weights.sum()
 
-        # Compute std for each kernel: σ_i = xi * avg distance to other archive members
+        # Compute per-dimension std for each kernel:
+        # σ_j^i = xi * sum_{e=1}^k |archive_x[e, j] - archive_x[i, j]| / (k - 1)
         sigma = np.zeros((archive_size, self.dim))
         for i in range(archive_size):
-            dists = np.abs(self.archive_x[i] - self.archive_x).sum(axis=1)
-            dists[i] = np.inf  # exclude self
-            nearest = np.partition(dists, min(2, archive_size - 1))[:min(2, archive_size - 1)]
-            sigma[i] = self.xi * nearest.mean() if len(nearest) > 0 else self.xi * np.ones(self.dim)
+            diffs = np.abs(self.archive_x - self.archive_x[i])
+            sigma[i] = self.xi * np.sum(diffs, axis=0) / max(archive_size - 1, 1)
         sigma = np.clip(sigma, 1e-10, None)  # avoid zero std
 
         # Generate new solutions
@@ -112,7 +100,7 @@ class ACO(BaseAlgorithm):
             x_new = self.rng.normal(self.archive_x[kernel_idx], sigma[kernel_idx])
             x_new = self._clip(x_new)
             new_solutions[m] = x_new
-            new_fitness[m] = self.problem.evaluate_with_penalty(x_new)
+            new_fitness[m] = self.evaluate(x_new)
 
         # Merge archive + new solutions, keep top-k
         merged_x = np.vstack([self.archive_x, new_solutions])
@@ -121,12 +109,8 @@ class ACO(BaseAlgorithm):
         self.archive_x = merged_x[order].copy()
         self.archive_f = merged_f[order].copy()
 
-        # Update global best
-        if self.archive_f[0] < self.g_best_f:
-            self.g_best_f = float(self.archive_f[0])
-            self.g_best_x = self.archive_x[0].copy()
-
         self.population = self.archive_x.copy()
         self.fitness = self.archive_f.copy()
 
         return self.g_best_f
+

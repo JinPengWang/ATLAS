@@ -11,7 +11,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("lgc")
+@register_algorithm("lgc", aliases=["lgc_nfe"])
 class LGC(BaseAlgorithm):
     """Logistic-Gauss Circle Optimizer."""
 
@@ -25,18 +25,12 @@ class LGC(BaseAlgorithm):
         u_max: float = 0.5,
         **kwargs: Any,
     ) -> None:
-        super().__init__(problem, max_iter, pop_size, seed, verbose, u_max=u_max, **kwargs)
+        super().__init__(problem, max_iter=max_iter, pop_size=pop_size, seed=seed, verbose=verbose, u_max=u_max, **kwargs)
         self.u_max = u_max
 
-    def get_name(self) -> str:
-        return "LGC"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
 
     def _wrap_to_bounds(self, x: np.ndarray) -> np.ndarray:
@@ -45,7 +39,7 @@ class LGC(BaseAlgorithm):
 
     def iterate(self, iter_idx: int) -> float:
         t = iter_idx + 1
-        total = max(self.max_iter, 2)
+        total = max(self.max_iter, 2) if self.max_iter > 0 else 500
         u = (1.0 - np.log(t) / np.log(total)) * self.u_max
         dist = np.sqrt(np.sum((self.g_best_x - self.population) ** 2, axis=1))
         g = u * np.log1p(dist)
@@ -72,13 +66,13 @@ class LGC(BaseAlgorithm):
                         self.g_best_x[j] - mod_base
                     )
             candidate = self._clip(candidate)
-            candidate_f = self.problem.evaluate_with_penalty(candidate)
+            candidate_f = self.evaluate(candidate)
             if candidate_f < self.fitness[i]:
                 next_population[i] = candidate
                 next_fitness[i] = candidate_f
 
         self.population = next_population
         self.fitness = next_fitness
-        self._update_global_best()
         return self.g_best_f
+
 

@@ -17,7 +17,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("de")
+@register_algorithm("de", aliases=["de_nfe"])
 class DE(BaseAlgorithm):
     """Differential Evolution.
 
@@ -48,7 +48,7 @@ class DE(BaseAlgorithm):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            problem, max_iter, pop_size, seed, verbose,
+            problem, max_iter=max_iter, pop_size=pop_size, seed=seed, verbose=verbose,
             F=F, CR=CR, strategy=strategy, **kwargs,
         )
         if strategy not in self.STRATEGIES:
@@ -57,15 +57,9 @@ class DE(BaseAlgorithm):
         self.CR = CR
         self.strategy = strategy
 
-    def get_name(self) -> str:
-        return "DE"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
 
     def iterate(self, iter_idx: int) -> float:
@@ -75,15 +69,13 @@ class DE(BaseAlgorithm):
             # Crossover (binomial)
             u = self._crossover(self.population[i], v)
             # Selection
-            f_u = self.problem.evaluate_with_penalty(u)
+            f_u = self.evaluate(u)
             if f_u <= self.fitness[i]:
                 self.population[i] = u
                 self.fitness[i] = f_u
-                if f_u < self.g_best_f:
-                    self.g_best_f = f_u
-                    self.g_best_x = u.copy()
 
         return self.g_best_f
+
 
     # ---- Mutation strategies ------------------------------------------
     def _mutate(self, target_idx: int) -> np.ndarray:

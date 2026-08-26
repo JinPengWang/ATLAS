@@ -24,7 +24,7 @@ def _levy_flight(rng: np.random.Generator, n: int, d: int) -> np.ndarray:
     return u / (np.abs(v) ** (1 / beta) + np.finfo(float).eps)
 
 
-@register_algorithm("psa")
+@register_algorithm("psa", aliases=["psa_nfe"])
 class PSA(BaseAlgorithm):
     """PID-based Search Algorithm."""
 
@@ -40,20 +40,14 @@ class PSA(BaseAlgorithm):
         kd: float = 1.2,
         **kwargs: Any,
     ) -> None:
-        super().__init__(problem, max_iter, pop_size, seed, verbose, kp=kp, ki=ki, kd=kd, **kwargs)
+        super().__init__(problem, max_iter=max_iter, pop_size=pop_size, seed=seed, verbose=verbose, kp=kp, ki=ki, kd=kd, **kwargs)
         self.kp = kp
         self.ki = ki
         self.kd = kd
 
-    def get_name(self) -> str:
-        return "PSA"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
         self.target_x = self.g_best_x.copy()
         self.target_f = self.g_best_f
@@ -62,7 +56,6 @@ class PSA(BaseAlgorithm):
         self.ek_2 = self.ek.copy()
 
     def iterate(self, iter_idx: int) -> float:
-        self._update_global_best()
         new_target_x = self.g_best_x.copy()
         new_target_f = self.g_best_f
 
@@ -74,10 +67,11 @@ class PSA(BaseAlgorithm):
             self.target_f = new_target_f
 
         t = iter_idx + 1
-        log_t = np.log(max(self.max_iter, 2))
-        a = (np.log(self.max_iter - t + 2) / log_t) ** 2
+        total_it = max(self.max_iter, 2) if self.max_iter > 0 else 500
+        log_t = np.log(total_it)
+        a = (np.log(max(total_it - t + 2, 2)) / log_t) ** 2
         out0 = (
-            np.cos(1.0 - t / max(self.max_iter, 1))
+            np.cos(1.0 - min(t / total_it, 1.0))
             + a * self.rng.random((self.pop_size, self.dim)) * _levy_flight(self.rng, self.pop_size, self.dim)
         ) * self.ek
         pid = (
@@ -85,11 +79,11 @@ class PSA(BaseAlgorithm):
             + self.rng.random((self.pop_size, 1)) * self.ki * self.ek
             + self.rng.random((self.pop_size, 1)) * self.kd * (self.ek - 2 * self.ek_1 + self.ek_2)
         )
-        r = self.rng.random((self.pop_size, 1)) * np.cos(t / max(self.max_iter, 1))
+        r = self.rng.random((self.pop_size, 1)) * np.cos(min(t / total_it, 1.0))
         self.population = self._clip(self.population + r * pid + (1.0 - r) * out0)
 
         for i in range(self.pop_size):
-            self.fitness[i] = self.problem.evaluate_with_penalty(self.population[i])
-        self._update_global_best()
+            self.fitness[i] = self.evaluate(self.population[i])
         return self.g_best_f
+
 

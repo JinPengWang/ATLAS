@@ -11,21 +11,15 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("lea")
+@register_algorithm("lea", aliases=["lea_nfe"])
 class LEA(BaseAlgorithm):
     """Love Evolution Algorithm."""
-
-    def get_name(self) -> str:
-        return "LEA"
 
     def initialize(self) -> None:
         if self.pop_size % 2 != 0:
             self.pop_size += 1
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
 
     def _gap_probability(self, f1: np.ndarray, f2: np.ndarray) -> np.ndarray:
@@ -47,10 +41,11 @@ class LEA(BaseAlgorithm):
         return c1, c2
 
     def iterate(self, iter_idx: int) -> float:
+        total_it = max(self.max_iter, 1) if self.max_iter > 0 else 500
         order = self.rng.permutation(self.pop_size)
         pairs = np.vstack((order[: self.pop_size // 2], order[self.pop_size // 2 :]))
         p = self._gap_probability(self.fitness[pairs[0]], self.fitness[pairs[1]])
-        h = 0.7 * (1.0 - iter_idx / max(self.max_iter, 1))
+        h = 0.7 * (1.0 - min(iter_idx / total_it, 1.0))
         g = np.sum(np.sqrt(np.sum((self.population - self.g_best_x) ** 2, axis=1)) / self.pop_size) / self.dim
         g += np.finfo(float).eps
 
@@ -72,11 +67,10 @@ class LEA(BaseAlgorithm):
                     c2[j] = self.rng.random() * x2[j] + self.rng.normal() * X2
                 c1 = self._clip(c1)
                 c2 = self._clip(c2)
-                f1 = self.problem.evaluate_with_penalty(c1)
-                f2 = self.problem.evaluate_with_penalty(c2)
+                f1 = self.evaluate(c1)
+                f2 = self.evaluate(c2)
                 self.population[idx1], self.population[idx2] = c1, c2
                 self.fitness[idx1], self.fitness[idx2] = f1, f2
-                self._update_global_best()
 
                 p[pair_idx] = (
                     (self.rng.random() + 0.5)
@@ -97,9 +91,9 @@ class LEA(BaseAlgorithm):
             c1 = self._clip(c1)
             c2 = self._clip(c2)
             self.population[idx1], self.population[idx2] = c1, c2
-            self.fitness[idx1] = self.problem.evaluate_with_penalty(c1)
-            self.fitness[idx2] = self.problem.evaluate_with_penalty(c2)
-            self._update_global_best()
+            self.fitness[idx1] = self.evaluate(c1)
+            self.fitness[idx2] = self.evaluate(c2)
 
         return self.g_best_f
+
 

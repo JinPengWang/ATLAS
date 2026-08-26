@@ -22,7 +22,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("dp")
+@register_algorithm("dp", aliases=["dp_nfe"])
 class DP(BaseAlgorithm):
     """Delta Plus optimiser.
 
@@ -51,10 +51,10 @@ class DP(BaseAlgorithm):
     ) -> None:
         super().__init__(
             problem,
-            max_iter,
-            pop_size,
-            seed,
-            verbose,
+            max_iter=max_iter,
+            pop_size=pop_size,
+            seed=seed,
+            verbose=verbose,
             delta_weight=delta_weight,
             peer_weight=peer_weight,
             noise_weight=noise_weight,
@@ -64,24 +64,18 @@ class DP(BaseAlgorithm):
         self.peer_weight = peer_weight
         self.noise_weight = noise_weight
 
-    def get_name(self) -> str:
-        return "DP"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
+        self.population = self.init_population()
         span = self.ub - self.lb
-        self.previous_population = self.population + self.rng.normal(
-            0.0, 0.01 * span, size=(self.pop_size, self.dim)
+        self.previous_population = self._clip(
+            self.population + self.rng.normal(0.0, 0.01 * span, size=(self.pop_size, self.dim))
         )
-        self.previous_population = self._clip(self.previous_population)
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
 
     def iterate(self, iter_idx: int) -> float:
-        progress = iter_idx / max(self.max_iter - 1, 1)
+        total_it = max(self.max_iter - 1, 1) if self.max_iter > 0 else 500
+        progress = min(iter_idx / total_it, 1.0)
         decay = 1.0 - progress
         span = self.ub - self.lb
 
@@ -101,7 +95,7 @@ class DP(BaseAlgorithm):
                 + perturb
             )
             candidate = self._clip(candidate)
-            candidate_f = self.problem.evaluate_with_penalty(candidate)
+            candidate_f = self.evaluate(candidate)
 
             if candidate_f <= self.fitness[i]:
                 next_population[i] = candidate
@@ -112,6 +106,6 @@ class DP(BaseAlgorithm):
         self.previous_population = self.population.copy()
         self.population = next_population
         self.fitness = next_fitness
-        self._update_global_best()
         return self.g_best_f
+
 

@@ -26,7 +26,7 @@ def plot_boxplot(
         figsize: Figure size.
         dpi: Resolution.
         save_path: If provided, save figure to this path.
-        log_scale: Use log scale on y-axis.
+        log_scale: Attempt log/symlog scale on y-axis if appropriate.
 
     Returns:
         The matplotlib Figure object.
@@ -35,13 +35,19 @@ def plot_boxplot(
 
     labels = []
     data = []
+    all_vals = []
     for algo_name, results in results_dict.items():
         labels.append(algo_name)
-        data.append([r.best_fitness for r in results])
+        vals = [r.best_fitness for r in results if np.isfinite(r.best_fitness)]
+        data.append(vals)
+        all_vals.extend(vals)
+
+    if not data or not all_vals:
+        return fig
 
     bp = ax.boxplot(
         data,
-        labels=labels,
+        tick_labels=labels,
         patch_artist=True,
         widths=0.6,
         showmeans=True,
@@ -49,13 +55,18 @@ def plot_boxplot(
     )
 
     # Color each box differently
-    colors = plt.cm.Set2(np.linspace(0, 1, len(data)))
+    colors = plt.cm.Set2(np.linspace(0, 1, max(len(data), 1)))
     for patch, color in zip(bp["boxes"], colors):
         patch.set_facecolor(color)
         patch.set_alpha(0.7)
 
+    arr = np.array(all_vals)
+    min_val, max_val = np.min(arr), np.max(arr)
     if log_scale:
-        ax.set_yscale("log")
+        if min_val > 0 and (max_val / max(min_val, 1e-300)) > 50:
+            ax.set_yscale("log")
+        elif min_val <= 0 and (max_val - min_val) > 100:
+            ax.set_yscale("symlog", linthresh=1.0)
 
     ax.set_ylabel("Final Best Fitness")
     ax.set_title(title or "Algorithm Comparison")

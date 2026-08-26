@@ -19,28 +19,39 @@ class _Registry:
     # ------------------------------------------------------------------
     # Decorator
     # ------------------------------------------------------------------
-    def __call__(self, name: str) -> Callable:
-        """Return a decorator that registers *cls* under *name*.
+    def __call__(
+        self,
+        name: str,
+        aliases: Optional[List[str]] = None,
+    ) -> Callable:
+        """Return a decorator that registers *cls* under *name* (and any *aliases*).
 
         Args:
-            name: The lookup key (usually lowercase, e.g. ``'pso'``).
+            name: The primary lookup key (usually lowercase, e.g. ``'pso'``).
+            aliases: Optional list of additional lookup keys (e.g. ``['pso_nfe']``).
 
         Returns:
             A class decorator.
         """
 
         def decorator(cls: Type) -> Type:
-            key = name.lower()
-            if key in self._registry:
-                raise ValueError(
-                    f"{self._kind} '{key}' is already registered "
-                    f"({self._registry[key].__name__}). "
-                    f"Cannot register {cls.__name__}."
-                )
-            self._registry[key] = cls
+            keys = [name.lower()]
+            if aliases:
+                keys.extend([a.lower() for a in aliases])
+
+            for key in keys:
+                if key in self._registry and self._registry[key] is not cls:
+                    # Allow idempotent re-registration of the same class
+                    raise ValueError(
+                        f"{self._kind} '{key}' is already registered "
+                        f"({self._registry[key].__name__}). "
+                        f"Cannot register {cls.__name__}."
+                    )
+                self._registry[key] = cls
             return cls
 
         return decorator
+
 
     # ------------------------------------------------------------------
     # Query helpers

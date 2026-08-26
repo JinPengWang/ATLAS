@@ -138,8 +138,24 @@ class BaseProblem(ABC):
             x_clamped = self.clamp(x)
             return self.evaluate(x_clamped)
 
+    def evaluate_batch(self, X: np.ndarray) -> np.ndarray:
+        """Evaluate a batch of candidate solutions.
+
+        Args:
+            X: A 2-D numpy array of shape ``(N, dim)``.
+
+        Returns:
+            A 1-D numpy array of shape ``(N,)`` containing fitness values.
+        """
+        N = len(X)
+        fitness = np.empty(N)
+        for i in range(N):
+            fitness[i] = self.evaluate_with_penalty(X[i])
+        return fitness
+
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(dim={self.dim}, "
             f"strategy={self.boundary_strategy})"
         )
+

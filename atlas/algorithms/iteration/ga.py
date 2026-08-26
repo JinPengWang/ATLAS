@@ -16,7 +16,7 @@ from atlas.core.base_problem import BaseProblem
 from atlas.utils.registry import register_algorithm
 
 
-@register_algorithm("ga")
+@register_algorithm("ga", aliases=["ga_nfe"])
 class GA(BaseAlgorithm):
     """Real-coded Genetic Algorithm.
 
@@ -50,7 +50,7 @@ class GA(BaseAlgorithm):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            problem, max_iter, pop_size, seed, verbose,
+            problem, max_iter=max_iter, pop_size=pop_size, seed=seed, verbose=verbose,
             crossover_prob=crossover_prob, mutation_prob=mutation_prob,
             tournament_size=tournament_size, eta_c=eta_c, eta_m=eta_m,
             **kwargs,
@@ -61,15 +61,9 @@ class GA(BaseAlgorithm):
         self.eta_c = eta_c
         self.eta_m = eta_m
 
-    def get_name(self) -> str:
-        return "GA"
-
     def initialize(self) -> None:
-        self.population = self.rng.uniform(self.lb, self.ub, size=(self.pop_size, self.dim))
-        self.fitness = np.array([
-            self.problem.evaluate_with_penalty(self.population[i])
-            for i in range(self.pop_size)
-        ])
+        self.population = self.init_population()
+        self.fitness = self.evaluate_population(self.population)
         self._update_global_best()
 
     def iterate(self, iter_idx: int) -> float:
@@ -95,8 +89,8 @@ class GA(BaseAlgorithm):
             c2 = self._clip(c2)
 
             # Pick the better child
-            f1 = self.problem.evaluate_with_penalty(c1)
-            f2 = self.problem.evaluate_with_penalty(c2)
+            f1 = self.evaluate(c1)
+            f2 = self.evaluate(c2)
             if f1 <= f2:
                 new_pop[i] = c1
                 self.fitness[i] = f1
@@ -105,8 +99,8 @@ class GA(BaseAlgorithm):
                 self.fitness[i] = f2
 
         self.population = new_pop
-        self._update_global_best()
         return self.g_best_f
+
 
     # ---- Selection ----------------------------------------------------
     def _tournament_select(self) -> np.ndarray:

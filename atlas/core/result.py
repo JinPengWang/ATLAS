@@ -33,6 +33,7 @@ class Result:
     convergence_curve: List[float] = field(default_factory=list)
     iterations: int = 0
     nfe: int = 0
+    wall_time_sec: float = 0.0
     extra: Dict[str, Any] = field(default_factory=dict)
 
     def best_solution_dict(self) -> Dict[str, float]:
