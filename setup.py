@@ -13,7 +13,7 @@ HERE = Path(__file__).parent
 
 setup(
     name="atlas",
-    version="0.1.0",
+    version="0.2.0",
     description=(
         "All-in-one Toolkit for Learning and Applying metaheuristicS (ATLAS) – "
         "a modular metaheuristic algorithm research platform."
@@ -24,13 +24,15 @@ setup(
     python_requires=">=3.8",
     packages=find_packages(exclude=["tests", "experiments", "results", "docs"]),
     install_requires=[
-        "numpy>=1.22,<2.0",
-        "scipy>=1.9,<2.0",
-        "matplotlib>=3.6,<4.0",
-        "seaborn>=0.12,<1.0",
-        "pandas>=1.5,<3.0",
-        "PyYAML>=6.0,<7.0",
-        "tqdm>=4.64,<5.0",
+        "numpy>=1.22",
+        "scipy>=1.9",
+        "matplotlib>=3.6",
+        "seaborn>=0.12",
+        "pandas>=1.5",
+        "PyYAML>=6.0",
+        "tqdm>=4.64",
+        "tabulate>=0.9.0",
+        "plotly>=5.0",
     ],
     extras_require={
         "dev": ["pytest>=7.0", "black", "ruff", "isort"],

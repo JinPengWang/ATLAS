@@ -16,6 +16,7 @@ from atlas.core import (
     ExperimentConfig,
     Result,
 )
+from atlas.report import generate_html_report
 from atlas.utils import (
     ExperimentSaver,
     get_algorithm,
@@ -35,4 +36,5 @@ __all__ = [
     "get_problem",
     "list_algorithms",
     "list_problems",
+    "generate_html_report",
 ]
