@@ -42,6 +42,7 @@ setup(
     entry_points={
         "console_scripts": [
             "atlas-benchmark=experiments.run_benchmark:main",
+            "atlas-ui=atlas.ui.run_ui:main",
         ],
     },
 )
