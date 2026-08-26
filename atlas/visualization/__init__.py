@@ -9,15 +9,24 @@ from atlas.visualization.convergence import (
     plot_convergence_comparison,
     plot_convergence_single,
 )
+from atlas.visualization.diversity import (
+    DiversityTracker,
+    plot_diversity,
+    plot_exploration_exploitation,
+)
 from atlas.visualization.fitness_landscape import plot_fitness_landscape
 from atlas.visualization.heatmap import plot_heatmap
 from atlas.visualization.plot_manager import PlotManager
 
 __all__ = [
     "PlotManager",
+    "DiversityTracker",
     "plot_convergence_single",
     "plot_convergence_comparison",
     "plot_boxplot",
     "plot_heatmap",
     "plot_fitness_landscape",
+    "plot_diversity",
+    "plot_exploration_exploitation",
 ]
+

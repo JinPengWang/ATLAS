@@ -169,3 +169,67 @@ class PlotManager:
             plot_3d=plot_3d,
         )
         return fig
+
+    # ------------------------------------------------------------------
+    # Diversity & Exploration-Exploitation
+    # ------------------------------------------------------------------
+    def plot_diversity(
+        self,
+        tracker: Any,
+        title: Optional[str] = None,
+        save_path: Optional[str] = None,
+        dpi: int = 150,
+        figsize: tuple = (9, 4),
+    ) -> Optional[plt.Figure]:
+        """Generate a population diversity curve plot.
+
+        Args:
+            tracker: :class:`DiversityTracker` instance.
+            title: Plot title.
+            save_path: File path to save, or ``None``.
+            dpi: Resolution.
+            figsize: Figure size.
+
+        Returns:
+            The Figure object.
+        """
+        from atlas.visualization.diversity import plot_diversity
+
+        return plot_diversity(
+            tracker,
+            title=title,
+            save_path=save_path,
+            dpi=dpi,
+            figsize=figsize,
+        )
+
+    def plot_exploration_exploitation(
+        self,
+        tracker: Any,
+        title: Optional[str] = None,
+        save_path: Optional[str] = None,
+        dpi: int = 150,
+        figsize: tuple = (9, 4),
+    ) -> Optional[plt.Figure]:
+        """Generate an exploration vs exploitation stacked area plot.
+
+        Args:
+            tracker: :class:`DiversityTracker` instance.
+            title: Plot title.
+            save_path: File path to save, or ``None``.
+            dpi: Resolution.
+            figsize: Figure size.
+
+        Returns:
+            The Figure object.
+        """
+        from atlas.visualization.diversity import plot_exploration_exploitation
+
+        return plot_exploration_exploitation(
+            tracker,
+            title=title,
+            save_path=save_path,
+            dpi=dpi,
+            figsize=figsize,
+        )
+
