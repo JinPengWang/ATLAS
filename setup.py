@@ -33,6 +33,7 @@ setup(
         "tqdm>=4.64",
         "tabulate>=0.9.0",
         "plotly>=5.0",
+        "optuna>=3.0",
     ],
     extras_require={
         "dev": ["pytest>=7.0", "black", "ruff", "isort"],
