@@ -68,37 +68,34 @@ class GA(BaseAlgorithm):
 
     def iterate(self, iter_idx: int) -> float:
         new_pop = np.empty_like(self.population)
+        new_fit = np.empty(self.pop_size)
 
-        for i in range(self.pop_size):
-            # Tournament selection
+        # Generate all children from the CURRENT (unmodified) population
+        i = 0
+        while i < self.pop_size:
             p1 = self._tournament_select()
             p2 = self._tournament_select()
 
-            # Crossover (SBX)
             if self.rng.random() < self.crossover_prob:
                 c1, c2 = self._sbx_crossover(p1, p2)
             else:
                 c1, c2 = p1.copy(), p2.copy()
 
-            # Mutation (polynomial)
-            c1 = self._polynomial_mutation(c1)
-            c2 = self._polynomial_mutation(c2)
+            c1 = self._clip(self._polynomial_mutation(c1))
+            c2 = self._clip(self._polynomial_mutation(c2))
 
-            # Clip to bounds
-            c1 = self._clip(c1)
-            c2 = self._clip(c2)
-
-            # Pick the better child
-            f1 = self.evaluate(c1)
-            f2 = self.evaluate(c2)
-            if f1 <= f2:
-                new_pop[i] = c1
-                self.fitness[i] = f1
-            else:
+            new_pop[i] = c1
+            i += 1
+            if i < self.pop_size:
                 new_pop[i] = c2
-                self.fitness[i] = f2
+                i += 1
+
+        # Evaluate all children at once (no mid-loop population/fitness mutation)
+        for i in range(self.pop_size):
+            new_fit[i] = self.evaluate(new_pop[i])
 
         self.population = new_pop
+        self.fitness = new_fit
         return self.g_best_f
 
 

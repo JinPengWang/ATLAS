@@ -55,7 +55,7 @@ class PureCEC2017Problem(BaseProblem):
 # ---------------------------------------------------------------------------
 # F1: Shifted and Rotated Bent Cigar Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f1_pure", aliases=["cec2017_f1"])
+@register_problem("cec2017_f1_pure")
 class CEC2017F1(PureCEC2017Problem):
     """F1: Shifted and Rotated Bent Cigar Function (Unimodal)."""
 
@@ -71,7 +71,7 @@ class CEC2017F1(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F3: Shifted and Rotated Rosenbrock's Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f3_pure", aliases=["cec2017_f3"])
+@register_problem("cec2017_f3_pure")
 class CEC2017F3(PureCEC2017Problem):
     """F3: Shifted and Rotated Rosenbrock's Function (Unimodal)."""
 
@@ -88,7 +88,7 @@ class CEC2017F3(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F4: Shifted and Rotated Rastrigin's Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f4_pure", aliases=["cec2017_f4"])
+@register_problem("cec2017_f4_pure")
 class CEC2017F4(PureCEC2017Problem):
     """F4: Shifted and Rotated Rastrigin's Function (Multimodal)."""
 
@@ -104,7 +104,7 @@ class CEC2017F4(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F5: Shifted and Rotated Expanded Griewank's plus Rosenbrock's Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f5_pure", aliases=["cec2017_f5"])
+@register_problem("cec2017_f5_pure")
 class CEC2017F5(PureCEC2017Problem):
     """F5: Shifted and Rotated Expanded Griewank's plus Rosenbrock's Function."""
 
@@ -123,7 +123,7 @@ class CEC2017F5(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F6: Shifted and Rotated Ackley's Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f6_pure", aliases=["cec2017_f6"])
+@register_problem("cec2017_f6_pure")
 class CEC2017F6(PureCEC2017Problem):
     """F6: Shifted and Rotated Ackley's Function (Multimodal)."""
 
@@ -142,7 +142,7 @@ class CEC2017F6(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F7: Shifted and Rotated Modified Schwefel's Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f7_pure", aliases=["cec2017_f7"])
+@register_problem("cec2017_f7_pure")
 class CEC2017F7(PureCEC2017Problem):
     """F7: Shifted and Rotated Modified Schwefel's Function (Multimodal)."""
 
@@ -158,7 +158,7 @@ class CEC2017F7(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F8: Shifted and Rotated Griewank's Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f8_pure", aliases=["cec2017_f8"])
+@register_problem("cec2017_f8_pure")
 class CEC2017F8(PureCEC2017Problem):
     """F8: Shifted and Rotated Griewank's Function (Multimodal)."""
 
@@ -175,7 +175,7 @@ class CEC2017F8(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F9: Shifted and Rotated Weierstrass Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f9_pure", aliases=["cec2017_f9"])
+@register_problem("cec2017_f9_pure")
 class CEC2017F9(PureCEC2017Problem):
     """F9: Shifted and Rotated Weierstrass Function (Multimodal)."""
 
@@ -201,7 +201,7 @@ class CEC2017F9(PureCEC2017Problem):
 # ---------------------------------------------------------------------------
 # F10: Shifted and Rotated Katsuura Function
 # ---------------------------------------------------------------------------
-@register_problem("cec2017_f10_pure", aliases=["cec2017_f10"])
+@register_problem("cec2017_f10_pure")
 class CEC2017F10(PureCEC2017Problem):
     """F10: Shifted and Rotated Katsuura Function (Multimodal)."""
 

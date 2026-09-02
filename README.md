@@ -8,7 +8,7 @@ benchmark studies, and easy extension with new algorithms or test functions.
 
 ## Highlights
 
-- **24 built-in algorithms**: 12 iteration-based variants and 12 NFE-based variants.
+- **18 built-in algorithms**: 18 modern metaheuristic algorithms, all supporting both iteration-based and NFE-based stopping criteria.
 - **155 benchmark problems**: 11 classic functions and 144 CEC benchmark functions.
 - **CEC suite aliases**: run a whole suite with names such as `cec2017` or `cec2022`.
 - **Multi-dimensional CEC testing**: use `--dim all` or explicit dimensions.
@@ -243,14 +243,12 @@ ATLAS/
 
 ## Add a New Algorithm
 
-1. Add the iteration version under `atlas/algorithms/iteration/my_algo.py`.
-2. Add the NFE version under `atlas/algorithms/nfe/my_algo.py`.
-3. Register with `@register_algorithm("my_algo")` and `@register_algorithm("my_algo_nfe")`.
-4. Import the classes in:
+1. Add the algorithm file under `atlas/algorithms/iteration/my_algo.py`. Since ATLAS 0.2, only ONE file in `iteration/` is needed — the `BaseAlgorithm` class handles both stopping modes automatically.
+2. Register with `@register_algorithm("my_algo", aliases=["my_algo_nfe"])` to preserve backward compatibility.
+3. Import the classes in:
    - `atlas/algorithms/iteration/__init__.py`
-   - `atlas/algorithms/nfe/__init__.py`
    - `atlas/algorithms/__init__.py`
-5. Add tests in `tests/test_algorithms.py` and `tests/test_nfe_algorithms.py`.
+4. Add tests in `tests/test_algorithms_all.py`.
 
 NFE implementations must call `self._evaluate(x)` instead of
 `self.problem.evaluate_with_penalty(x)` so function evaluations are counted.

@@ -53,27 +53,21 @@ class ConstraintHandler(ABC):
         Returns:
             List of sorted indices (best solution index first).
         """
+        from functools import cmp_to_key
+        
+        def _cmp(idx1: int, idx2: int) -> int:
+            return self.compare(
+                solutions[idx1],
+                float(fitnesses[idx1]),
+                float(violations[idx1]),
+                solutions[idx2],
+                float(fitnesses[idx2]),
+                float(violations[idx2]),
+            )
+            
         n = len(solutions)
         indices = list(range(n))
-        # Default bubble sort using pairwise compare
-        for i in range(n):
-            swapped = False
-            for j in range(n - 1):
-                idx1 = indices[j]
-                idx2 = indices[j + 1]
-                cmp = self.compare(
-                    solutions[idx1],
-                    float(fitnesses[idx1]),
-                    float(violations[idx1]),
-                    solutions[idx2],
-                    float(fitnesses[idx2]),
-                    float(violations[idx2]),
-                )
-                if cmp > 0:  # idx2 is better than idx1
-                    indices[j], indices[j + 1] = indices[j + 1], indices[j]
-                    swapped = True
-            if not swapped:
-                break
+        indices.sort(key=cmp_to_key(_cmp))
         return indices
 
 

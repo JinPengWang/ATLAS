@@ -97,7 +97,7 @@ def render_dashboard() -> None:
         config = ExperimentConfig(
             algorithms=selected_algos,
             problems=selected_probs,
-            dimensions=[int(dim)],
+            dims=[int(dim)],
             max_iter=int(max_iter),
             pop_size=int(pop_size),
             runs=int(runs),
@@ -217,8 +217,22 @@ def render_dashboard() -> None:
         # ----------------- Tab 4: Data Export -----------------
         with tab4:
             st.subheader("Export Academic Tables")
-            latex_code = export_latex_table(all_results)
-            md_code = export_markdown_table(all_results)
+            # Build summary DataFrame from nested results dict
+            rows = []
+            for _prob_key, _algos in all_results.items():
+                for _algo_name, _res_list in _algos.items():
+                    _fits = [r.best_fitness for r in _res_list]
+                    rows.append({
+                        "problem": _prob_key,
+                        "algorithm": _algo_name,
+                        "mean": float(np.mean(_fits)),
+                        "std": float(np.std(_fits)),
+                        "best": float(np.min(_fits)),
+                        "worst": float(np.max(_fits)),
+                    })
+            _df_summary = pd.DataFrame(rows)
+            latex_code = export_latex_table(_df_summary)
+            md_code = export_markdown_table(_df_summary)
 
             st.text_area("LaTeX Table Code", latex_code, height=200)
             st.download_button(

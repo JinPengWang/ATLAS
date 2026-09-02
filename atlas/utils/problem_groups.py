@@ -8,7 +8,7 @@ CEC_SUITE_GROUPS = {
     "cec2005": [f"cec2005_f{i}" for i in range(1, 26)],   # F1-F25
     "cec2013": [f"cec2013_f{i}" for i in range(1, 29)],   # F1-F28
     "cec2014": [f"cec2014_f{i}" for i in range(1, 31)],   # F1-F30
-    "cec2017": [f"cec2017_f{i}" for i in range(1, 30)],   # F1-F29
+    "cec2017": [f"cec2017_f{i}" for i in range(1, 31) if i != 2],  # F1,F3-F30 (F2 excluded by CEC2017 organizers)
     "cec2019": [f"cec2019_f{i}" for i in range(1, 11)],   # F1-F10
     "cec2020": [f"cec2020_f{i}" for i in range(1, 11)],   # F1-F10
     "cec2022": [f"cec2022_f{i}" for i in range(1, 13)],   # F1-F12
@@ -41,7 +41,7 @@ def expand_problem_names(names: List[str]) -> List[str]:
     Examples::
 
         >>> expand_problem_names(["cec2017"])
-        ["cec2017_f1", "cec2017_f2", ..., "cec2017_f29"]
+        ["cec2017_f1", "cec2017_f3", ..., "cec2017_f30"]
 
         >>> expand_problem_names(["sphere", "cec2022"])
         ["sphere", "cec2022_f1", ..., "cec2022_f12"]

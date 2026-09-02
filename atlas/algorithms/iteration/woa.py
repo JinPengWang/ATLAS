@@ -53,15 +53,15 @@ class WOA(BaseAlgorithm):
         a = 2.0 - 2.0 * min(iter_idx / total_it, 1.0)
 
         for i in range(self.pop_size):
-            r1 = self.rng.random()
-            r2 = self.rng.random()
-            A = 2.0 * a * r1 - a   # coefficient vector
-            C = 2.0 * r2            # coefficient vector
+            r1 = self.rng.random(self.dim)
+            r2 = self.rng.random(self.dim)
+            A = 2.0 * a * r1 - a   # D-dimensional coefficient vector
+            C = 2.0 * r2            # D-dimensional coefficient vector
             p = self.rng.random()    # probability for spiral vs encircling
 
             if p < 0.5:
                 # Encircling prey or search for prey
-                if abs(A) < 1:
+                if np.linalg.norm(A) < 1:
                     # Encircling prey (exploitation)
                     D = abs(C * self.g_best_x - self.population[i])
                     self.population[i] = self.g_best_x - A * D

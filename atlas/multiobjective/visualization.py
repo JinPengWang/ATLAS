@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Dict, Optional, Sequence, Tuple
 
+import matplotlib
+matplotlib.rcParams["mathtext.default"] = "regular"  # avoid bold math
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -12,7 +14,7 @@ def plot_pareto_front_2d(
     front: np.ndarray,
     true_pf: Optional[np.ndarray] = None,
     title: Optional[str] = None,
-    labels: Tuple[str, str] = ("f₁", "f₂"),
+    labels: Tuple[str, str] = ("$f_1$", "$f_2$"),
     figsize: Tuple[float, float] = (8, 6),
     save_path: Optional[str] = None,
 ) -> plt.Figure:
@@ -70,7 +72,7 @@ def plot_pareto_front_2d(
 def plot_pareto_front_3d(
     front: np.ndarray,
     title: Optional[str] = None,
-    labels: Tuple[str, str, str] = ("f₁", "f₂", "f₃"),
+    labels: Tuple[str, str, str] = ("$f_1$", "$f_2$", "$f_3$"),
     figsize: Tuple[float, float] = (9, 7),
     save_path: Optional[str] = None,
 ) -> plt.Figure:
@@ -108,7 +110,7 @@ def plot_mo_comparison(
     fronts_dict: Dict[str, np.ndarray],
     true_pf: Optional[np.ndarray] = None,
     title: Optional[str] = None,
-    labels: Tuple[str, str] = ("f₁", "f₂"),
+    labels: Tuple[str, str] = ("$f_1$", "$f_2$"),
     figsize: Tuple[float, float] = (9, 6),
     save_path: Optional[str] = None,
 ) -> plt.Figure:

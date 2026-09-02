@@ -128,7 +128,14 @@ class AlgorithmTuner:
                     res = algo.run(run_id=run_id)
                     scores.append(res.best_fitness)
 
-            return float(np.mean(scores))
+            if len(scores) == 1:
+                return float(scores[0])
+            scores_arr = np.array(scores, dtype=float)
+            # Prevent large-magnitude problems from dominating: normalize each to [0,1] then average
+            s_min, s_max = scores_arr.min(), scores_arr.max()
+            if s_max - s_min < 1e-12:
+                return 0.0
+            return float(np.mean((scores_arr - s_min) / (s_max - s_min)))
 
         study.optimize(
             objective,

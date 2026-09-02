@@ -37,9 +37,13 @@ class ExperimentSaver:
         problem_name: str,
         exp_label: str = "exp",
         base_dir: str = "results",
+        run_dir: Optional[str] = None,
     ) -> None:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.exp_dir = Path(base_dir) / problem_name / f"{timestamp}_{exp_label}"
+        if run_dir is not None:
+            self.exp_dir = Path(run_dir) / problem_name / exp_label
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.exp_dir = Path(base_dir) / problem_name / f"{timestamp}_{exp_label}"
         self.figures_dir = self.exp_dir / "figures"
         self.logs_dir = self.exp_dir / "logs"
         self.figures_dir.mkdir(parents=True, exist_ok=True)
