@@ -100,7 +100,7 @@ class HHO(BaseAlgorithm):
                 if r >= 0.5 and abs(e) >= 0.5:
                     # Soft besiege
                     delta_x = rabbit_x - self.population[i]
-                    x_new = delta_x - e * np.abs(j * rabbit_x - self.population[i])
+                    x_new = rabbit_x - e * np.abs(j * rabbit_x - self.population[i])
                     x_new = self._clip(x_new)
                     f_new = self.evaluate(x_new)
                     if f_new < self.fitness[i]:

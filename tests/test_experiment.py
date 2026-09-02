@@ -92,7 +92,7 @@ class TestExperimentExecution:
             assert len(results["sphere"]["de"]) == 4
 
             # Check that statistical reports were generated
-            stat_dir = Path(tmpdir) / "statistical_reports"
+            stat_dir = list(Path(tmpdir).glob("experiment_*/statistical_reports"))[0]
             assert stat_dir.exists()
             assert (stat_dir / "summary_statistics.csv").exists()
             assert (stat_dir / "benchmark_table.tex").exists()

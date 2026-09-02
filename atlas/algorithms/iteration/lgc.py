@@ -56,7 +56,10 @@ class LGC(BaseAlgorithm):
                         * (self.ub[j] - self.population[i, j])
                     )
                     if candidate[j] > self.ub[j] or candidate[j] < self.lb[j]:
-                        candidate[j] = self._wrap_to_bounds(candidate)[j]
+                        span_j = self.ub[j] - self.lb[j]
+                        candidate[j] = self.lb[j] + float(
+                            np.mod(candidate[j] - self.lb[j], span_j + np.finfo(float).eps)
+                        )
                 else:
                     mod_base = self.lb[j] + np.mod(
                         self.rng.random() / np.pi * self.population[i, j] - self.lb[j],

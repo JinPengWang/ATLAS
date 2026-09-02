@@ -182,9 +182,16 @@ class LSHADE(BaseAlgorithm):
             ]
 
         # ----- Linear population size reduction -----
+        # Use NFE-based progress when running in NFE mode (max_iter <= 0)
+        if self.max_iter > 0:
+            _progress = min((iter_idx + 1) / max(self.max_iter, 1), 1.0)
+        else:
+            _max_nfe = getattr(self, "max_nfe", 0) or getattr(self, "_max_nfe", 0)
+            _cur_nfe = getattr(self, "_nfe", 0)
+            _progress = min(_cur_nfe / max(_max_nfe, 1), 1.0)
         N_new = max(
             self._N_min,
-            round(((self._N_min - self._N_init) / self.max_iter) * (iter_idx + 1) + self._N_init),
+            round((self._N_min - self._N_init) * _progress + self._N_init),
         )
         if N_new < N:
             # Remove the worst (N - N_new) individuals

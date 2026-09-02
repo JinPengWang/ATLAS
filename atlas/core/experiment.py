@@ -132,6 +132,10 @@ class Experiment:
     def __init__(self, config: ExperimentConfig) -> None:
         self.config = config
         self.logger = get_logger("atlas.experiment")
+        from datetime import datetime
+        import os
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.run_dir = os.path.join(config.base_dir, f"experiment_{timestamp}")
 
     # ------------------------------------------------------------------
     # Public API
@@ -177,7 +181,7 @@ class Experiment:
 
                 # Optionally save per-algorithm outputs
                 if cfg.save_results:
-                    saver = ExperimentSaver(key, algo_name, cfg.base_dir)
+                    saver = ExperimentSaver(key, algo_name, cfg.base_dir, run_dir=self.run_dir)
                     saver.save_csv(results)
                     saver.save_summary(results)
                     saver.save_convergence_csv(results)
@@ -301,7 +305,7 @@ class Experiment:
             return
 
         df_summary = pd.DataFrame(rows)
-        out_dir = Path(cfg.base_dir) / "statistical_reports"
+        out_dir = Path(self.run_dir) / "statistical_reports"
         out_dir.mkdir(parents=True, exist_ok=True)
 
         # 1. Export CSV summary
@@ -338,6 +342,35 @@ class Experiment:
             except Exception as e:
                 self.logger.warning("Friedman test could not be computed: %s", e)
 
+            # Pairwise Wilcoxon signed-rank tests
+            if len(cfg.algorithms) >= 2:
+                wilcoxon_rows = []
+                algo_names = cfg.algorithms
+                for a_idx in range(len(algo_names)):
+                    for b_idx in range(a_idx + 1, len(algo_names)):
+                        a_name = algo_names[a_idx]
+                        b_name = algo_names[b_idx]
+                        scores_a = np.array(perf_dict[a_name])
+                        scores_b = np.array(perf_dict[b_name])
+                        try:
+                            w_result = wilcoxon_signed_rank_test(scores_a, scores_b)
+                            symbol = "+" if w_result.is_significant and np.mean(scores_a) < np.mean(scores_b) else \
+                                     "-" if w_result.is_significant and np.mean(scores_a) > np.mean(scores_b) else "="
+                            wilcoxon_rows.append({
+                                "A": a_name, "B": b_name,
+                                "statistic": w_result.stat,
+                                "p_value": w_result.p_value,
+                                "significant": w_result.is_significant,
+                                "symbol": symbol,
+                            })
+                        except Exception:
+                            pass
+                if wilcoxon_rows:
+                    import pandas as pd
+                    df_wilcoxon = pd.DataFrame(wilcoxon_rows)
+                    self.logger.info("\nWilcoxon Pairwise Tests:\n%s", df_wilcoxon.to_string(index=False))
+                    df_wilcoxon.to_csv(out_dir / "wilcoxon_test.csv", index=False)
+
     # ------------------------------------------------------------------
     # Plot Generation
     # ------------------------------------------------------------------
@@ -360,7 +393,7 @@ class Experiment:
                 )
                 if fig is not None:
                     label = "comparison" if is_comparison else cfg.algorithms[0]
-                    saver = ExperimentSaver(prob_key, label, cfg.base_dir)
+                    saver = ExperimentSaver(prob_key, label, cfg.base_dir, run_dir=self.run_dir)
                     saver.save_plot(fig, f"convergence_{prob_key}")
 
             # Box-plot
@@ -371,7 +404,7 @@ class Experiment:
                 )
                 if fig is not None:
                     label = "comparison" if is_comparison else cfg.algorithms[0]
-                    saver = ExperimentSaver(prob_key, label, cfg.base_dir)
+                    saver = ExperimentSaver(prob_key, label, cfg.base_dir, run_dir=self.run_dir)
                     saver.save_plot(fig, f"boxplot_{prob_key}")
 
         # Heatmap
@@ -382,5 +415,5 @@ class Experiment:
                 problem_names=list(all_results.keys()),
             )
             if fig is not None:
-                saver = ExperimentSaver("all_problems", "comparison", cfg.base_dir)
+                saver = ExperimentSaver("all_problems", "comparison", cfg.base_dir, run_dir=self.run_dir)
                 saver.save_plot(fig, "heatmap")
